@@ -91,6 +91,56 @@ The `Specification/` folder contains the completed Gate 2 deliverables for Apex 
 The `FDE/Week 3/` folder contains:
 - `README.md` - Complete Week 3 schedule, deliverables, and requirements
 - `Week3_findings.md` - Participant's analysis and action items (created in this session)
+- `W3D3-BuildLoop-Exercise.md` - Wednesday afternoon solo diagnostic exercise (Cascade Public Libraries)
+
+### W3D3 Build-Loop Exercise (Wednesday Afternoon)
+**File**: `FDE/Week 3/W3D3-BuildLoop-Exercise.md`
+**Due**: Wednesday EOD to squad lead
+**Time budget**: ~2.5 hours (suggested, no hard cutoff)
+**Status**: ✅ **COMPLETED** - NOT graded, but feeds directly into Friday D#5 (build-loop response memo)
+**Deliverable**: `Deliverables/Build-loop-exercise-outcome-Andrzej_Bihun.md`
+
+**What it is**:
+- Solo diagnostic exercise on Cascade Public Libraries Hold Queue capability spec
+- 8 signals to classify (code snippets, test issues, builder questions)
+- Practice applying the 4-category diagnostic framework before Friday exam
+- Each signal requires: Classification + Rationale + Response (in correct tone)
+
+**The 8 signals**:
+1. `notification_deadline.py` - 72-hour expiration logic
+2. `accessibility_priority.py` - Priority weight implementation (NEW file builder added)
+3. `auto_checkout_handler.py` - Auto-checkout with return reminder
+4. `test_overdrive_refresh.py` - Date-bound test fixture (fails in 2026)
+5. `place_hold.py` - Duplicate hold rejection logic
+6. `paused_holds.py` - Paused hold notification behavior
+7. `sms_notification.py` - SMS-only vs dual-channel notification
+8. Builder question - Academic + Accessibility intersection (blocking PR merge)
+
+**Participant results** (completed):
+- 8/8 classifications correct (100% accuracy)
+- Signals 3 & 6: Both unjustified implementation choices (return reminder, paused notification)
+- Signal 8: Legitimate clarification request (Academic + Accessibility intersection)
+- Key learning: Distinguishing spec ambiguity (Cat 1) from builder misread (Cat 2) when spec flags uncertainty
+- Signal 7 (SMS notification) identified as spec gap due to R12 Note creating ambiguity
+
+**Critical hints from exercise**:
+- "Read each signal twice before classifying" - Don't stop at first impression
+- "Signal 1 in particular: read R3 carefully" - There's a trap in the 72-hour logic (missing "if unclaimed" check)
+- "Two of the eight signals are in the same category" - Signals 3 & 6 both unjustified implementation choices
+- "One signal is a legitimate clarification request, not a failure" - Signal 8
+
+**What coaches test**:
+> "Did you apply the move with the same discipline on unseen material, or did you slip back into surface-level classification?"
+
+**Submission format** (per signal):
+```markdown
+### Signal N — [one-line label]
+**Classification:** [spec gap | builder misread | unjustified implementation choice | test/environment issue | legitimate clarification request]
+**Rationale (1 sentence):** [Cite R-numbers, quote spec]
+**Response (2-4 sentences):** [Correct tone for category]
+```
+
+Plus: 100-150 word reflection on hardest diagnostic move
 
 ### Critical Week 3 References
 Located in `FDE/Reference/`:
@@ -358,6 +408,49 @@ Does AI's code match spec AS WRITTEN?
                           Fix: Add to spec
 ```
 
+### Systematic Diagnostic Procedure (Use for Wednesday Exercise + Friday D#5)
+
+**Step 0: Collect Evidence**
+1. Capture the failure signal (test output, AI's code, AI's questions)
+2. Retrieve spec AS WRITTEN (not from memory!)
+3. Find relevant section and copy exact text
+
+**Step 1: Spec-to-Code Match Test**
+- Question: Does AI's code match spec AS WRITTEN?
+- How: Read spec aloud, trace code, ask "Would a literal reader think this satisfies?"
+- Decision: Match → Go to Step 2 | No match → Go to Step 3
+
+**Step 2: Intent Gap Test** (for code that matches AS WRITTEN)
+- Question: Is there a gap between what you wrote and what you meant?
+- How: Red flag scan (validate, handle, check), 5-year-old test
+- Decision: Intent gap → 🟡 Cat 1 (Spec Ambiguity) | No gap → ✅ Pass
+
+**Step 3: Reasonableness Test** (for code that doesn't match spec)
+- Question: Is AI's choice reasonable for someone without domain context?
+- How: "If I had ONLY these words, what would I do?"
+- Decision: Reasonable → Go to Step 4 | Unreasonable → Go to Step 5
+
+**Step 4: Materiality Test** (for reasonable but different choices)
+- Question: Does the difference matter?
+- How: Impact analysis - does it change outcome, violate constraint?
+- Decision: Meaningful → 🟡 Cat 1 (Spec Ambiguity) | Not meaningful → ✅ Acceptable Variation
+
+**Step 5: Specification Coverage Test** (for unreasonable choices)
+- Question: Did spec explicitly address this scenario?
+- How: Grep spec for keywords, check if statement is unambiguous
+- Decision: Explicitly covered → 🔴 Cat 2 (Builder Misread) | Silent → 🟣 Cat 4 (Design Gap)
+
+**Step 6: Test Verification Check** (do in parallel with above)
+- Question: Is test expectation consistent with spec?
+- How: Read test assertion, read spec requirement, compare
+- Decision: Test contradicts spec → 🟠 Cat 3 (Test Problem) | Test matches → Not test issue
+
+**Anti-Defensive Reading Checklist**:
+- [ ] Did I read what I WROTE, not what I MEANT?
+- [ ] Did I scan for red flag words?
+- [ ] Did I ask "Could a 5-year-old do this from my words?"
+- [ ] Am I blaming AI for something I left ambiguous?
+
 ### Specification Verification Checklist (Before Building)
 
 **To prevent spec ambiguity**:
@@ -441,14 +534,23 @@ Does AI's code match spec AS WRITTEN?
   - [ ] API failure modes covered (timeout, 500, 429, 401, partial response)
   - [ ] Happy path vs error path balanced (~50/50)
 
-### D#5: Build-Loop Response Memo
-- Reference Wednesday's Cascade Public Libraries fixture diagnosis
+### D#5: Build-Loop Response Memo (15 min)
+- Reference Wednesday's Cascade Public Libraries fixture diagnosis (from W3D3 exercise) - see `Deliverables/Build-loop-exercise-outcome-Andrzej_Bihun.md`
 - Classify what went wrong (spec gap / builder misread / unjustified addition / test issue)
 - Write corrective response in appropriate tone for each category:
-  - Spec ambiguity → rewrite spec
-  - Builder misread → re-prompt with spec quoted
-  - Test problem → fix test
-  - Design gap → add missing requirement
+  - Spec ambiguity → rewrite spec (your voice, own the gap - "I should have...")
+  - Builder misread → re-prompt with spec quoted (professional, not punitive)
+  - Unjustified implementation choice → collaborative removal request (appreciate + reject + redirect to proper process)
+  - Test problem → diagnostic fix
+  - Legitimate clarification → acknowledge + revise + confirm (appreciation: "Good catch", "Thanks for...")
+- Apply same systematic diagnostic procedure from Wednesday exercise
+- DO NOT skip diagnosis - graded on classification accuracy, not just response quality
+
+**Key learning from W3D3**:
+- When spec flags uncertainty (Assumptions, Notes), own it as spec ambiguity even if wording seemed clear
+- Read Assumptions section first to catch flagged ambiguities
+- Unjustified choices need all 3 elements: appreciate thinking + reject feature + suggest proper process (spec change request)
+- Legitimate clarifications need appreciation to reinforce correct builder behavior
 
 ### D#6: Client Feedback Response
 - Address Marcus Reyes CEO pushback professionally
@@ -493,13 +595,30 @@ Does AI's code match spec AS WRITTEN?
 ```
 Examples: "...distinguishing spec ambiguity from builder misreads" OR "...catching design gaps I forgot to specify" OR "...avoiding defensive reading when diagnosing my own spec"
 
+**Participant prediction**: "The hardest part of build-loop diagnosis for me will be distinguishing genuine builder misreads from spec ambiguity that only felt clear to me."
+
 **09:00-10:30 CET - Coach delivers**: Live walkthrough on Coffee Subscription Credit Handler fixture (90 min), demonstrates all 5 categories + tone/response
 
-**Afternoon - Coach delivers**: Cascade Public Libraries Hold Queue fixture release
+**Afternoon - Coach delivers**: Cascade Public Libraries Hold Queue fixture release (`W3D3-BuildLoop-Exercise.md`)
 
-**Afternoon - You do**: Solo diagnosis exercise on Cascade fixture
+**Afternoon - You do**: Solo diagnosis exercise on Cascade fixture (see `FDE/Week 3/W3D3-BuildLoop-Exercise.md`)
+- 8 signals to classify using 4-category framework
+- Each signal: Classification + Rationale + Response (2-4 sentences, correct tone)
+- Plus: 100-150 word reflection on hardest diagnostic move
+- Time budget: ~2.5 hours
+- Use systematic diagnostic procedure (see Build-Loop Diagnosis Framework section)
 
-**EOD Wednesday - You deliver**: Cascade diagnosis to squad lead (NOT graded, feeds Friday D#5)
+**Critical exercise hints**:
+- Signal 1 (notification_deadline.py): Read R3 carefully - there's a trap
+- Two signals share the same category (don't force uniqueness)
+- One signal is legitimate clarification (Signal 8 likely)
+- Read each signal twice before classifying
+
+**EOD Wednesday - You deliver**: ✅ **COMPLETED** - Cascade diagnosis submitted (`Deliverables/Build-loop-exercise-outcome-Andrzej_Bihun.md`)
+- 8/8 classifications correct
+- All response tones appropriate for categories
+- Reflection identifies Cat 1 vs Cat 2 distinction as hardest challenge
+- Ready to apply same approach to Friday D#5
 
 ### Thursday (Virtual Day 4) - Discovery & Initial Design
 
@@ -575,6 +694,9 @@ Read `Specification/SUBMISSION_SUMMARY.md` or the consolidated `Gate2-Andrzej-Bi
 ### To understand Week 3 requirements:
 Read `FDE/Week 3/README.md` (complete 152-line guide) and `Week3_findings.md` (participant analysis)
 
+### To prepare for Wednesday build-loop diagnostic:
+Read `FDE/Week 3/W3D3-BuildLoop-Exercise.md` (Cascade Public Libraries exercise with 8 signals)
+
 ### To understand FDE methodology:
 Read `FDE/Reference/atx/atx-concepts.md` and `FDE/Week 2/references/atx-*.md` files
 
@@ -633,6 +755,14 @@ Read `FDE/Reference/spec-ambiguity-vs-builder-mistakes.md` (CRITICAL before Wedn
 - [ ] Submit classification prediction: "The hardest part... will be ___"
 - [ ] Audit one Week 2 activity for ambiguous requirements
 
+**Wednesday Afternoon** (CRITICAL PRACTICE):
+- [x] Complete W3D3-BuildLoop-Exercise.md (Cascade Public Libraries)
+- [x] Classify all 8 signals using systematic diagnostic procedure (8/8 correct)
+- [x] Write responses in correct tone for each category
+- [x] Write 100-150 word reflection on hardest diagnostic move
+- [x] Submit to squad lead by EOD Wednesday: `Deliverables/Build-loop-exercise-outcome-Andrzej_Bihun.md`
+- [x] **Save your analysis** - reuse diagnostic approach for Friday D#5
+
 **Before Thursday 09:30**:
 - [ ] Read `discovery-questioning-patterns.md`
 - [ ] Prepare question templates for discovery session
@@ -643,12 +773,14 @@ Read `FDE/Reference/spec-ambiguity-vs-builder-mistakes.md` (CRITICAL before Wedn
 - [ ] Claude Code tested and working (for D#9)
 - [ ] Week 2 specs available for reference
 - [ ] Verification checklist printed/available
+- [ ] Wednesday Cascade diagnosis available for D#5 reference
 
 **Before Friday 13:30** (use 09:00-13:30 prep time):
 - [ ] Marcus pushback read and annotated
 - [ ] D#6 strategy planned (concede vs hold scope points)
 - [ ] D#1-D#3 refined against discovery + pushback
 - [ ] D#4 outline prepared (two specs structure)
+- [ ] Review Wednesday Cascade classifications for D#5 pattern
 
 ## Session-Specific Reminders
 
