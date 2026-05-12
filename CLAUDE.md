@@ -7,9 +7,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is an FDE (Full-Delivery Engineer) learning program repository for Week 3. The participant (Andrzej Bihun, Business Analyst) is working through an AI-native engagement simulation focused on building agentic solutions.
 
 ### Program Structure
-- **Week 2 Completed**: Specifications for Apex Distribution ETA Inquiry Agent in `Specification/` folder
+- **Week 2**: Completed — Gate 2 deliverables archived and removed from this repo
 - **Week 3 Current**: End-to-end AI-native engagement simulation (MedFlex healthcare staffing scenario)
-- **Demo Application**: Working Python/Flask prototype in `demo_app/` demonstrating Week 2 work
+- **Gate 3 Scenario**: `FDE/Week 3/Gate3-Participant-Pack.md` — released Thursday 09:00 CET
+
+### Current Status (Thursday Week 3)
+- ✅ Gate 3 scenario pack received and read
+- ✅ Discovery role-play with Marcus Reyes completed (09:30-10:30 CET)
+- ✅ W3D3 Build-loop exercise submitted: `Deliverables/Build-loop-exercise-outcome-Andrzej_Bihun.md`
+- **ACTIVE NOW**: Draft D#1, D#2, D#3 for Thursday 23:59 CET interim submission
+- **FRIDAY**: Exam 13:30-17:00 CET, verbal defense 17:50-19:00 CET
 
 ### Key Objectives for Week 3
 1. Execute complete FDE engagement: discovery → specification → build-loop correction → stakeholder management
@@ -18,258 +25,304 @@ This is an FDE (Full-Delivery Engineer) learning program repository for Week 3. 
 4. Diagnose build-loop failures with accurate classification
 5. Handle client pushback professionally with scope discipline
 
-## Running the Demo Application
+---
 
-### Quick Start
-```bash
-cd demo_app
-pip install -r requirements.txt
-python app.py
-```
+## The MedFlex Scenario (Gate 3)
 
-The application runs on `http://localhost:5000` with three views:
-- **Customer View**: `/` - Simulate customer inquiries
-- **Admin Panel**: `/admin` - View agent decision log
-- **Comparison View**: `/comparison` - Baseline vs agent metrics
+> **MedFlex** — healthcare staffing agency, 200 employees, 5-state US region. B2B with hospital systems and B2C with travel nurses.
 
-### Test Scenarios
-Use these order IDs to demonstrate different agent behaviors:
-- `AX-771-3344` - Standard ETA lookup (Fully Agentic)
-- `AX-771-3344` → "Need more specific time?" - Precision ETA (Agent-Led)
-- `AX-441-8821` → "Need more specific time?" - GPS stale escalation (52 min)
-- `AX-996-7890` - High-value exception (£1,250 package)
-- `XX-999-9999` - Order not found error
+### Current Operations
+- Hospitals submit shift requests via email, portal, or phone
+- **8 coordinators manually match nurses to shifts** based on credentials, proximity, availability, hospital preferences, nurse preferences
+- **Compliance verification** — license checks, background, training certifications — done manually against state regulatory databases
+- ~120 shift-matching decisions per coordinator per day
+- **Average time to fill: 4.2 hours.** Target: under 1 hour
+- **Mismatch rate** (wrong credentials for facility type): 7%
+- **No-show rate**: 12%
 
-### Demo Application Architecture
-```
-demo_app/
-├── app.py                    # Flask application (main routes)
-├── agent/
-│   ├── order_validator.py    # Order ID extraction & validation
-│   ├── eta_calculator.py     # ETA calculation logic
-│   └── escalation_engine.py  # Escalation trigger detection
-├── templates/                # HTML views
-├── data/                     # Mock JSON data (orders, routes)
-└── requirements.txt          # Python dependencies
-```
+### Stakeholder — Marcus Reyes, CEO
+- Just closed Series B; board wants significant growth in 24 months
+- **Two failed AI projects**: chatbot hospital staff rejected; recommendation engine nobody used
+- Background: operations + growth, not engineering
+- Tone: confident, time-pressured, results-oriented
+- Respects FDEs who challenge framing with substance
+- Engagement framing: *"10x the business without 10x-ing the coordinators"* in 8 weeks
 
-**Key Design Principle**: Demo uses mock data (no real system integrations) to prove agent concept before expensive integration work.
+### Known Contradictions from Discovery (catch and flag)
+1. *"Our app is the source of truth for nurse availability"* vs *"When a nurse calls in sick they call Kim, and Kim updates the schedule by hand"*
+2. *"All credentials are verified before the nurse joins our roster"* vs *"When a credential lapses we get a state regulatory ping and we re-verify within a week"*
+3. *"The 7% mismatch rate is hospital-flagged dissatisfaction"* vs *"We have a quality score. Trust me, it's reliable"* (when asked how agent should determine quality)
 
-## Week 2 Specification Structure
+### Explicit Out-of-Scope (do not include in Gate 3 designs)
+- Building a hospital-facing portal for shift submission (they use existing channels)
+- Building a nurse-facing mobile app (they use phone/SMS/email today)
+- Pricing engine / margin optimisation
+- Continuing-education renewal automation for nurses (not in v1)
 
-The `Specification/` folder contains the completed Gate 2 deliverables for Apex Distribution:
+### Key People Referenced (not available in discovery)
+- **Kim** — senior coordinator (operational detail)
+- **Aaron** — IT (system internals)
+- **Linda** — compliance (regulatory specifics)
 
-### Core Deliverables
-1. **Agent Purpose Document** (`06_Agent_Purpose_Document.md`) - Primary specification for ETA Inquiry Agent
-   - Activity catalog with 6 activities (order validation, ETA calculation, escalation)
-   - Autonomy matrix defining delegation levels
-   - Escalation triggers (GPS stale >30 min, order not found, customer demands callback)
-   - Success metrics: 90% deflection rate, <30 sec response time, >90% ETA accuracy
+---
 
-2. **Cognitive Load Map** (`03_Cognitive_Load_Map.md`) - Task decomposition showing:
-   - ETA Inquiries: low-cognitive, high-volume (400/day, 73 hrs/day)
-   - Billing Disputes: high-cognitive, judgment-heavy
+## Week 3 Deliverables Reference
 
-3. **Delegation Suitability Matrix** (`04_Delegation_Suitability_Matrix.md`) - 8 task clusters scored:
-   - 4/8 Fully Agentic (standard ETA lookup, dispute intake, low-value exceptions)
-   - 2/8 Agent-Led (precision ETA with GPS staleness risk)
-   - 2/8 Human-Led (credit decisions, dispatch optimization)
+### Deliverable Time Budget (Friday 13:30-17:00, 210 minutes total)
 
-4. **Volume × Value Analysis** (`05_Volume_Value_Analysis.md`) - Business case:
-   - ETA Inquiries: 73 hrs/day, £301K annual savings, 66 hrs/day capacity freed
+| # | File | Time | Strategy |
+|---|------|------|----------|
+| **D#1** | `01-problem-framing.md` | 20 min | Revise Thursday draft against Marcus feedback |
+| **D#2** | `02-intake-scope.md` | 20 min | Revise Thursday draft, add scope boundaries |
+| **D#3** | `03-architecture.md` | 30 min | Revise Thursday draft, ensure ADRs have real trade-offs |
+| **D#4** | `04a-capability-spec-<name>.md` + `04b-...` | **90 min** | **Heaviest!** Apply verification checklist |
+| **D#5** | `05-build-loop-response.md` | 15 min | Reference Cascade diagnosis from `Deliverables/` |
+| **D#6** | `06-client-feedback.md` | 20 min | Address each Marcus pushback point concretely |
+| **D#7** | `07-validation-plan.md` | 10 min | Failure modes + mitigation, compliance risk |
+| **D#8** | `08-reflection.md` | 10 min | Specific lessons, not generic |
+| **D#9** | `09-self-spec-reflection.md` | 15 min | Run ONE D#4 spec through Claude Code, diagnose honestly |
+| | **TOTAL** | **230 min** | You have 210 min — work fast |
 
-5. **System Data Inventory** (`07_System_Data_Inventory.md`) - Integration landscape:
-   - CRM (Salesforce), Driver App GPS API, Dispatch Console, Aurum Billing
-   - Critical constraint: Aurum batch-only (T-1 lag, no real-time API)
+### D#1: Problem Framing & Success Metrics
+- "10x without 10x-ing" decoded into architectural requirements (e.g., "agent must hold N concurrent coordinator decisions/min")
+- Measurable success metrics for MedFlex, hospitals, nurses
+- What does it actually demand of architecture (not just a label)
 
-### Submission Document
-- `Gate2-Andrzej-Bihun.md` - Consolidated 3,642-line submission with all 7 deliverables
-- `SUBMISSION_SUMMARY.md` - Overview of deliverables and demo status
+### D#2: Engagement Intake & Scope
+- Business context, stakeholder map (Marcus, Kim, Aaron, Linda), constraints, risks
+- MVP scope definition with **concrete out-of-scope list with rationale** (interpret for your engagement, don't lift Gate3 pack verbatim)
+- Address two failed AI projects explicitly
 
-## Week 3 Program Materials
+### D#3: Agentic Solution Architecture
+- Specific agent decision points where contextual reasoning determines outcomes a rule-based system couldn't reach
+- Delegation archetypes per workflow
+- **Minimum 2 ADRs** with:
+  - Alternatives considered (not just "we chose X")
+  - Trade-off analysis (consequences of each option)
+  - Why decision could be revisited (under what conditions)
+- Avoid "justification theater" — real trade-offs only
 
-The `FDE/Week 3/` folder contains:
-- `README.md` - Complete Week 3 schedule, deliverables, and requirements
-- `Week3_findings.md` - Participant's analysis and action items (created in this session)
-- `W3D3-BuildLoop-Exercise.md` - Wednesday afternoon solo diagnostic exercise (Cascade Public Libraries)
+### D#4: Two Production-Grade Capability Specifications (CRITICAL — 43% of exam time)
+- Precise enough for Claude Code to build from without guessing at intent
+- Shared entities consistent across both specs (one glossary)
+- Worked examples for edge cases; marked assumptions with confidence levels
+- Verification checklist:
+  - [ ] No red flag words (valid, appropriate, handle)
+  - [ ] 3+ worked examples per calculation
+  - [ ] Constraints extracted to top with DO/DO NOT statements
+  - [ ] Production readiness: error handling, validation, logging, concurrency
+  - [ ] Edge cases listed explicitly
+  - [ ] API failure modes covered (timeout, 500, 429, 401, partial response)
+  - [ ] Happy path vs error path balanced (~50/50)
 
-### W3D3 Build-Loop Exercise (Wednesday Afternoon)
+### D#5: Build-Loop Response Memo
+- References Cascade Public Libraries fixture (`Deliverables/Build-loop-exercise-outcome-Andrzej_Bihun.md`)
+- Each of 8 signals classified with response in correct tone per category
+- Read spec alongside code — don't stop at first impression
+- Tones: spec ambiguity ("I should have..."), builder misread (re-prompt, professional), unjustified choice (appreciate + reject + redirect), test problem (fix test), legitimate clarification (appreciate + revise + confirm)
+
+### D#6: Client Feedback Response
+- Friday morning's Marcus pushback memo loaded; each point addressed concretely
+- Hold scope discipline: if you cave, name what gets cut; if you decline, propose concrete alternative
+- "Yes, 6 weeks!" = capitulation (fail); stonewalling = fail; honest replanning = success
+
+### D#7: Validation Plan
+- Accuracy + edge cases + failure modes + compliance risk
+- State portal rate limits, regulatory drift, model accuracy drift, single-points-of-failure — all named with mitigation
+
+### D#8: Reflection Document
+- Specific, not generic; honest assessment of what would change with more time
+
+### D#9: Self-Spec Build-Loop Reflection (1 page) — CRITICAL
+- Run ONE spec from D#4 through Claude Code under exam conditions
+- Reflect: (a) what Claude built and whether it matches intent, (b) what questions it asked, (c) diagnosis of each gap, (d) what you'd change in 30 more minutes
+- **Graded on diagnosis honesty, NOT code correctness**
+- Broken build + honest diagnosis > working code by accident
+- Avoid: "Claude mostly got it right" when it clearly didn't
+
+---
+
+## Friday Exam Flow (Gate3 pack §9 guidance)
+
+- **0–20 min** — Re-read Thursday D#1-D#3 drafts + Marcus pushback memo; list what changed
+- **20–60 min** — D#4 (capability specs) — don't skimp
+- **60–90 min** — D#5 (build-loop response) — Cascade fixture, classify 8 signals
+- **90–120 min** — D#6 (client feedback) + D#3 finalisation (update ADRs if pushback exposed weakness)
+- **120–145 min** — D#7 (validation plan) + D#2 finalisation
+- **145–175 min** — D#9 (self-spec reflection, 30 min clock)
+- **175–195 min** — D#8 (reflection) + D#1 polish
+- **195–210 min** — Final pass: hunt for AI-as-feature drift, cross-spec inconsistency, "mostly got it right" in #9, missing out-of-scope in #2, happy-path-only validation in #7
+
+**Final pass priority: triage weakest deliverable, not polish the strongest.**
+
+---
+
+## Common Timing Mistakes to Avoid
+
+❌ **WRONG**: "Friday 09:00-17:00 is the exam (8 hours)"
+✅ **RIGHT**: 09:00-13:30 = prep time, 13:30-17:00 = exam time (3.5h)
+
+❌ **WRONG**: "I'll submit Friday EOD"
+✅ **RIGHT**: 17:00 SHARP — no extensions
+
+❌ **WRONG**: "Thursday 23:59 D#1-D#3 must be perfect"
+✅ **RIGHT**: Rough drafts fine — just input for CEO feedback generator
+
+---
+
+## W3D3 Build-Loop Exercise (Reference for D#5)
+
 **File**: `FDE/Week 3/W3D3-BuildLoop-Exercise.md`
-**Due**: Wednesday EOD to squad lead
-**Time budget**: ~2.5 hours (suggested, no hard cutoff)
-**Status**: ✅ **COMPLETED** - NOT graded, but feeds directly into Friday D#5 (build-loop response memo)
-**Deliverable**: `Deliverables/Build-loop-exercise-outcome-Andrzej_Bihun.md`
+**Submitted**: ✅ `Deliverables/Build-loop-exercise-outcome-Andrzej_Bihun.md`
 
-**What it is**:
-- Solo diagnostic exercise on Cascade Public Libraries Hold Queue capability spec
-- 8 signals to classify (code snippets, test issues, builder questions)
-- Practice applying the 4-category diagnostic framework before Friday exam
-- Each signal requires: Classification + Rationale + Response (in correct tone)
-
-**The 8 signals**:
-1. `notification_deadline.py` - 72-hour expiration logic
-2. `accessibility_priority.py` - Priority weight implementation (NEW file builder added)
-3. `auto_checkout_handler.py` - Auto-checkout with return reminder
-4. `test_overdrive_refresh.py` - Date-bound test fixture (fails in 2026)
-5. `place_hold.py` - Duplicate hold rejection logic
-6. `paused_holds.py` - Paused hold notification behavior
-7. `sms_notification.py` - SMS-only vs dual-channel notification
-8. Builder question - Academic + Accessibility intersection (blocking PR merge)
-
-**Participant results** (completed):
+**Results**:
 - 8/8 classifications correct (100% accuracy)
 - Signals 3 & 6: Both unjustified implementation choices (return reminder, paused notification)
+- Signal 7: Spec gap (R12 Note created ambiguity)
 - Signal 8: Legitimate clarification request (Academic + Accessibility intersection)
-- Key learning: Distinguishing spec ambiguity (Cat 1) from builder misread (Cat 2) when spec flags uncertainty
-- Signal 7 (SMS notification) identified as spec gap due to R12 Note creating ambiguity
+- Key learning: When spec flags uncertainty (Assumptions, Notes), own it as spec ambiguity even if wording seemed clear
 
-**Critical hints from exercise**:
-- "Read each signal twice before classifying" - Don't stop at first impression
-- "Signal 1 in particular: read R3 carefully" - There's a trap in the 72-hour logic (missing "if unclaimed" check)
-- "Two of the eight signals are in the same category" - Signals 3 & 6 both unjustified implementation choices
-- "One signal is a legitimate clarification request, not a failure" - Signal 8
+**The 8 signals** (for D#5 reference):
+1. `notification_deadline.py` — 72-hour expiration logic (trap in R3: missing "if unclaimed" check)
+2. `accessibility_priority.py` — Priority weight (NEW file builder added — unjustified)
+3. `auto_checkout_handler.py` — Return reminder (unjustified implementation choice)
+4. `test_overdrive_refresh.py` — Date-bound test fixture (fails in 2026 — test/environment issue)
+5. `place_hold.py` — Duplicate hold rejection
+6. `paused_holds.py` — Paused hold notification (unjustified implementation choice)
+7. `sms_notification.py` — SMS-only vs dual-channel (spec gap)
+8. Builder question — Academic + Accessibility intersection (legitimate clarification)
 
-**What coaches test**:
-> "Did you apply the move with the same discipline on unseen material, or did you slip back into surface-level classification?"
+---
 
-**Submission format** (per signal):
-```markdown
-### Signal N — [one-line label]
-**Classification:** [spec gap | builder misread | unjustified implementation choice | test/environment issue | legitimate clarification request]
-**Rationale (1 sentence):** [Cite R-numbers, quote spec]
-**Response (2-4 sentences):** [Correct tone for category]
+## Build-Loop Diagnosis Framework
+
+### The 5 Categories
+
+**Category 1: Spec Ambiguity** (YOU caused it)
+- Signal: AI's code matches spec as written, but not your intent
+- Fix: Rewrite spec to be precise, add worked examples
+- Red flags: "valid," "appropriate," "handle," "check," "reasonable"
+
+**Category 2: Builder Misread** (AI caused it)
+- Signal: AI's code contradicts explicit spec statements
+- Fix: Re-prompt with relevant spec section highlighted, don't change spec
+
+**Category 3: Test/Environment Problem** (Test caused it)
+- Signal: Code matches spec, test expectation is wrong
+- Fix: Update the test, not the code or spec
+
+**Category 4: Design Gap** (Spec incomplete)
+- Signal: Build is "correct" but obviously incomplete for production
+- Fix: Add missing requirement (error handling, concurrency, logging) to spec
+
+**Category 5: Legitimate Clarification Request** (Expected behavior)
+- Signal: Builder asks about genuine spec intersection gap
+- Response: Appreciate + revise spec + confirm (reinforce correct behavior)
+
+### Diagnostic Decision Tree
+
+```
+Does AI's code match spec AS WRITTEN?
+├─ YES → Does it match your INTENT?
+│         ├─ YES → Pass (no problem)
+│         └─ NO → Cat 1: Spec Ambiguity — rewrite spec
+└─ NO → Is AI's choice reasonable?
+        ├─ YES → Is difference meaningful?
+        │         ├─ YES → Cat 1: Spec Ambiguity — clarify spec
+        │         └─ NO → Acceptable variation
+        └─ NO → Does spec address this?
+                ├─ YES → Cat 2: Builder Misread — re-prompt
+                └─ NO → Cat 4: Design Gap — add to spec
+(Always check: Test contradicts spec → Cat 3: Test Problem)
 ```
 
-Plus: 100-150 word reflection on hardest diagnostic move
+### Anti-Defensive Reading Checklist
+- [ ] Did I read what I WROTE, not what I MEANT?
+- [ ] Did I scan for red flag words?
+- [ ] Did I ask "Could a 5-year-old do this from my words?"
+- [ ] Am I blaming AI for something I left ambiguous?
+- [ ] Did I read the Assumptions section first?
 
-### Critical Week 3 References
-Located in `FDE/Reference/`:
-- `spec-ambiguity-vs-builder-mistakes.md` - Build-loop diagnostic taxonomy (MUST READ before Wednesday)
-- `production-spec-checklist.md` - Specification quality checklist
-- `discovery-questioning-patterns.md` - Discovery session preparation
-- `integration-spec-template.md` - Template for capability specs
+---
 
 ## FDE Methodology (ATX Framework)
 
-The specifications follow the ATX (Agent Task eXecution) framework - a structured methodology for deciding what work AI agents should do, how autonomous they should be, and whether it's economically worth it.
-
-### The Three Ways to Scale Work
-1. **Traditional Software** - Fixed rules, fast but can't handle unexpected situations
-2. **Hiring More People** - Flexible but expensive, slow to scale, coordination overhead
-3. **Digital Labour (AI Agents)** - NEW! Software speed + human-like reasoning (what ATX is about)
-
-**Key insight**: Agents are statistical (probabilistic), not deterministic. They need guardrails, testing, supervision - like managing a workforce, not just deploying code.
-
 ### The ATX Process (4 Steps)
 
-**Step 1: Discovery - Find Pain Points**
-- Ask real workers (not just managers): What takes most of your day? What requires lots of back-and-forth?
-- Output: List of painful, time-consuming tasks with volume estimates
+**Step 1: Discovery** — Find pain points from real workers, not SOPs. Output: volume-estimated task list.
 
-**Step 2: Cognitive Load Mapping - Break Down the Work**
-- Identify "Jobs to be Done" (cognitive contracts with outcomes, not just tasks)
-- Map Cognitive Zones (understanding → data gathering → diagnosis → decision → action)
-- Find Breakpoints (where control shifts: customer → agent, agent → human, rules → judgment)
-- Output: Map showing where thinking happens and where handoffs occur
+**Step 2: Cognitive Load Mapping** — Jobs to be Done, Cognitive Zones (understand → gather → diagnose → decide → act), Breakpoints (where control shifts).
 
-**Step 3: Delegation Qualification - Decide Who Does What**
+**Step 3: Delegation Qualification** — Score on 7 dimensions, assign archetype:
 
-Score each task on 7 dimensions, then assign to archetype:
+| Archetype | When to Use |
+|-----------|-------------|
+| Fully Agentic | High volume, structured, reversible, well-governed |
+| Agent-Led + Human Oversight | High volume but needs human backstop |
+| Human-Led + Agent Support | Complex analysis, agent synthesizes, human decides |
+| Human-Led + Automation Support | Agent does rote tasks, human keeps control |
+| Human Only | Ethics, tacit knowledge, irreversible |
 
-| Archetype | When to Use | Example |
-|-----------|-------------|---------|
-| **🟢 Fully Agentic** | High volume, structured, reversible, well-governed | Standard ETA lookup |
-| **🟡 Agent-Led + Human Oversight** | High volume but needs human backstop | Precision ETA with GPS risk |
-| **🟠 Human-Led + Agent Support** | Complex analysis, agent synthesizes, human decides | Billing dispute investigation |
-| **🔴 Human-Led + Automation Support** | Agent does rote tasks, human keeps control | Data entry with verification |
-| **⚫ Human Only** | Ethics, tacit knowledge, irreversible | Firing decisions, negotiations |
+**Anti-pattern**: NOT everything should be Fully Agentic. Good ATX shows mixed archetypes.
 
-**Anti-pattern**: NOT everything should be "Fully Agentic"! Good ATX work shows mixed archetypes (Week 2 example: 50% fully agentic, 25% agent-led, 25% human-led)
-
-**Step 4: Prioritization - Pick Winners**
-- Plot tasks on Volume × Value grid (high volume + high reasoning = prime agent territory)
-- Calculate economics: `Annual saving = Human cost - Agent cost`
-- Only proceed if payback ≤ 18 months and Year 1 ROI > 0%
-- Sequence into waves so early wins finance later investments
+**Step 4: Prioritize** — Volume × Value grid, payback ≤ 18 months, Year 1 ROI > 0%.
 
 ### ATX Scoring Dimensions
 
 | Dimension | Good for Agents | Bad for Agents |
 |-----------|-----------------|----------------|
-| **Input Structure** | Structured data | Messy, ambiguous |
-| **Decision Determinism** | Follows patterns | Needs judgment |
-| **Tool Coverage** | APIs available | Systems inaccessible |
-| **Context Complexity** | Explicit rules | Tribal knowledge |
-| **Exception Rate** | Rare edge cases | Frequent surprises |
-| **Latency** | Can wait seconds | Needs instant response |
-| **Risk/Compliance** | Low consequence, reversible | Irreversible, regulated |
+| Input Structure | Structured data | Messy, ambiguous |
+| Decision Determinism | Follows patterns | Needs judgment |
+| Tool Coverage | APIs available | Systems inaccessible |
+| Context Complexity | Explicit rules | Tribal knowledge |
+| Exception Rate | Rare edge cases | Frequent surprises |
+| Latency | Can wait seconds | Needs instant response |
+| Risk/Compliance | Low consequence, reversible | Irreversible, regulated |
 
 ### Key ATX Principles
+1. **Start from LIVED work, not SOPs** — real work ≠ documented processes
+2. **Owned agents, not rented** — own the orchestration logic, boundaries, prompts
+3. **Platform thinking (compounding)** — reusable integrations; each new agent cheaper
+4. **Cognitive work, not processes** — target interpretation, judgment, exception handling
+5. **Economics must close BEFORE production** — token cost is both cost measure and governance instrument
 
-1. **Start from LIVED work, not SOPs** - Real work ≠ documented processes; shadow people, review transcripts
-2. **Owned agents, not rented** - Pre-built SaaS agents = vendor lock-in; own the orchestration logic, boundaries, prompts
-3. **Platform thinking (compounding)** - Build reusable integrations; each new agent becomes cheaper
-4. **Cognitive work, not processes** - Target interpretation, judgment, exception handling (gaps between processes)
-5. **Economics must close BEFORE production** - Token cost is both cost measure AND governance instrument
-
-### Buildability Standards
-
-Specifications must include:
+### Buildability Standards (for D#4)
+Specs must include:
 - Entity definitions (tables, columns, types, constraints)
 - State machines (status transitions, validation rules)
 - API contracts (request/response formats with examples)
-- Error handling for all failure modes (not just happy path)
+- Error handling for ALL failure modes (not just happy path)
 - Escalation patterns with explicit triggers
 - Worked examples for calculations/transformations
 - Edge cases listed explicitly
 - Production readiness: logging, metrics, alerts, concurrency, security
 
-## Working with Specifications
+---
 
-### When Creating New Capability Specs
-Follow the structure in `06_Agent_Purpose_Document.md`:
-
-1. **Purpose Section**: Job to be done, customer problem, business problem
-2. **Scope**: In-scope capabilities, explicitly call out what's OUT of scope
-3. **Success Metrics**: Lagging indicators (business outcomes) + leading indicators (operational health)
-4. **Activity Catalog**: Each activity with:
-   - Trigger conditions
-   - Input/output formats
-   - Process steps (with code/query examples)
-   - Error handling with specific failure scenarios
-   - Acceptance criteria
-5. **Autonomy Matrix**: For each activity, define autonomy level and human involvement
-6. **Escalation Triggers**: Conditions requiring human handoff with customer experience
-7. **Failure Modes & Mitigation**: Scenario → Root Cause → Customer Impact → Detection → Mitigation
-8. **Data/System Dependencies**: Integration requirements, API contracts, schema definitions
-9. **Non-Functional Requirements**: Performance, scalability, security, audit/compliance
-
-### Quick Reference: Specification Template Structure
-
-Use this structure for Friday D#4 (two capability specs):
+## Capability Spec Template (D#4)
 
 ```markdown
 # Capability Spec: [Name]
 
 ## Constraints (Read First!)
-✅ DO: [specific actions]
-❌ DO NOT: [forbidden actions]
+DO: [specific actions]
+DO NOT: [forbidden actions]
 
 ## Requirement: [Name]
 
 ### Description
-[Concrete actions only - no abstract words]
+[Concrete actions only — no abstract words]
 
 ### Examples (Worked)
 - Input: [case 1] → Output: [expected 1]
-- Input: [edge case] → Output: [expected 2]  
+- Input: [edge case] → Output: [expected 2]
 - Input: [invalid] → Output: [error message]
 
 ### Edge Cases
-- ✅ Happy path: [...]
-- ⚠️ Empty/null input: [...]
-- ⚠️ Concurrent requests: [...]
-- ⚠️ Invalid values: [...]
+- Happy path: [...]
+- Empty/null input: [...]
+- Concurrent requests: [...]
+- Invalid values: [...]
 
 ### Error Handling
 | Failure Mode | Response | Example |
@@ -282,10 +335,6 @@ Use this structure for Friday D#4 (two capability specs):
 2. [Step with validation]
 3. [Step with error handling]
 
-### Validation Rules
-- Input: [validation criteria]
-- Output: [format requirements]
-
 ### Observability
 - Log: [what gets logged]
 - Metrics: [what gets tracked]
@@ -297,504 +346,66 @@ Use this structure for Friday D#4 (two capability specs):
 - [ ] Error handling: [all modes covered]
 ```
 
-**Time per spec**: ~45 minutes × 2 = 90 minutes total
-
-### Anti-Patterns to Avoid
-Based on Week 2 and Week 3 program guidance:
-1. **"Everything is fully agentic"** - Only assign Fully Agentic where justified (Week 2 achieved 50% ratio)
-2. **AI-as-a-feature on traditional systems** - Agents must be the mechanism, not sprinkled LLM calls
-3. **Generic consulting templates** - Ground everything in specific artefacts and constraints
-4. **Ignoring system constraints** - Aurum batch-only, GPS API availability, CRM dependencies
-5. **Defensive spec reflection** - Honest diagnosis of build failures scores higher than defensive justification
-6. **No ADR trade-offs** - Architecture decisions must name alternatives and consequences
-
-## Development Commands
-
-### Demo Application
-```bash
-# Install dependencies
-cd demo_app
-pip install -r requirements.txt
-
-# Run development server
-python app.py
-
-# Application runs on http://localhost:5000
-# No separate test commands - demo uses mock data
-```
-
-### Python Environment
-- Python 3.13.0 installed
-- Flask 3.0.0 web framework
-- Flask-CORS for cross-origin requests
-- geopy for distance calculations (haversine formula)
-- python-dateutil for datetime parsing
-
-## Architecture Notes
-
-### Apex Distribution ETA Inquiry Agent (Week 2)
-**Problem**: 400 ETA inquiries/day consuming 73 hours (28% of Customer Ops capacity), 4-11 min response time with 4-hour ETA windows.
-
-**Solution**: AI-native agent that:
-- Provides <30 sec response time with ±30 min ETA windows
-- Deflects 90% of inquiries (360/400) autonomously
-- Frees 66 hrs/day (8.8 FTE) capacity
-- Calculates precision ETAs using GPS + traffic data
-- Escalates when GPS >30 min stale or exceptions detected
-
-**Key Architectural Decisions**:
-1. **GPS Staleness Threshold**: 30 minutes (agent autonomous if <30 min, escalates if >30 min)
-2. **Confidence Scoring**: HIGH (>90%), MEDIUM (70-90%), LOW (<70% → escalate)
-3. **Escalation Reasons**: GPS_STALE, GPS_UNAVAILABLE, ORDER_NOT_FOUND, CUSTOMER_MISMATCH, DATA_INCONSISTENCY, EXCEPTION_INQUIRY, CALLBACK_REQUESTED
-4. **Phased Rollout**: Phase 1A (scheduled window only), Phase 1B (add precision ETA), Phase 1C (proactive updates)
-
-**System Constraints**:
-- Aurum Billing: Batch-only, T-1 lag, no real-time API, 48h modification turnaround
-- GPS Data: Driver App backend with <15 min polling target (currently ~30 min)
-- CRM: Salesforce with read/write access (orders, customers, routes, cases)
-
-### Demo Application (Mock Implementation)
-- Uses JSON files instead of real database (mock_orders.json, mock_routes.json)
-- In-memory decision log (resets on server restart)
-- Simulates GPS staleness (timestamps in mock data)
-- Demonstrates all 3 delegation archetypes visually (green/yellow/red badges)
-
-## Build-Loop Diagnosis Framework (Critical for Week 3)
-
-### The 4 Categories of Build Failures
-
-When AI builds don't match expectations, diagnose which category before fixing:
-
-**Category 1: Spec Ambiguity** (YOU caused it)
-- **Signal**: AI's code matches spec as written, but not your intent
-- **Example**: "Validate address" → AI checks format, you meant USPS API geocoding
-- **Fix**: Rewrite the spec to be precise, add worked examples
-- **Red flags**: Words like "valid," "appropriate," "handle," "check," "reasonable"
-
-**Category 2: Builder Misread** (AI caused it)
-- **Signal**: AI's code contradicts explicit spec statements
-- **Example**: Spec says "approval BEFORE payment," AI processes payment first
-- **Fix**: Re-prompt with relevant spec section highlighted, don't change spec
-- **Detection**: "Wait, did you read the part about...?"
-
-**Category 3: Test Problem** (Test caused it)
-- **Signal**: Code matches spec, test expectation is wrong
-- **Example**: Spec says "round half up," test expects floor behavior
-- **Fix**: Update the test, not the code or spec
-
-**Category 4: Design Gap** (Spec incomplete)
-- **Signal**: Build is "correct" but obviously incomplete for production
-- **Example**: Spec described happy path, forgot error handling for API failures
-- **Fix**: Add missing requirement (error handling, concurrency, logging) to spec
-- **Common gaps**: Error handling, validation, observability, concurrency control
-
-### Diagnostic Decision Tree
-
-```
-Does AI's code match spec AS WRITTEN?
-├─ YES → Does it match your INTENT?
-│         ├─ YES → ✅ Pass (no problem)
-│         └─ NO → 🟡 Category 1: Spec Ambiguity
-│                    Fix: Rewrite spec
-└─ NO → Is AI's choice reasonable?
-        ├─ YES → Is difference meaningful?
-        │         ├─ YES → 🟡 Category 1: Spec Ambiguity  
-        │         │         Fix: Clarify spec
-        │         └─ NO → ✅ Acceptable variation
-        └─ NO → Does spec address this?
-                ├─ YES → 🔴 Category 2: Builder Misread
-                │         Fix: Re-prompt AI
-                └─ NO → 🟣 Category 4: Design Gap
-                          Fix: Add to spec
-```
-
-### Systematic Diagnostic Procedure (Use for Wednesday Exercise + Friday D#5)
-
-**Step 0: Collect Evidence**
-1. Capture the failure signal (test output, AI's code, AI's questions)
-2. Retrieve spec AS WRITTEN (not from memory!)
-3. Find relevant section and copy exact text
-
-**Step 1: Spec-to-Code Match Test**
-- Question: Does AI's code match spec AS WRITTEN?
-- How: Read spec aloud, trace code, ask "Would a literal reader think this satisfies?"
-- Decision: Match → Go to Step 2 | No match → Go to Step 3
-
-**Step 2: Intent Gap Test** (for code that matches AS WRITTEN)
-- Question: Is there a gap between what you wrote and what you meant?
-- How: Red flag scan (validate, handle, check), 5-year-old test
-- Decision: Intent gap → 🟡 Cat 1 (Spec Ambiguity) | No gap → ✅ Pass
-
-**Step 3: Reasonableness Test** (for code that doesn't match spec)
-- Question: Is AI's choice reasonable for someone without domain context?
-- How: "If I had ONLY these words, what would I do?"
-- Decision: Reasonable → Go to Step 4 | Unreasonable → Go to Step 5
-
-**Step 4: Materiality Test** (for reasonable but different choices)
-- Question: Does the difference matter?
-- How: Impact analysis - does it change outcome, violate constraint?
-- Decision: Meaningful → 🟡 Cat 1 (Spec Ambiguity) | Not meaningful → ✅ Acceptable Variation
-
-**Step 5: Specification Coverage Test** (for unreasonable choices)
-- Question: Did spec explicitly address this scenario?
-- How: Grep spec for keywords, check if statement is unambiguous
-- Decision: Explicitly covered → 🔴 Cat 2 (Builder Misread) | Silent → 🟣 Cat 4 (Design Gap)
-
-**Step 6: Test Verification Check** (do in parallel with above)
-- Question: Is test expectation consistent with spec?
-- How: Read test assertion, read spec requirement, compare
-- Decision: Test contradicts spec → 🟠 Cat 3 (Test Problem) | Test matches → Not test issue
-
-**Anti-Defensive Reading Checklist**:
-- [ ] Did I read what I WROTE, not what I MEANT?
-- [ ] Did I scan for red flag words?
-- [ ] Did I ask "Could a 5-year-old do this from my words?"
-- [ ] Am I blaming AI for something I left ambiguous?
-
-### Specification Verification Checklist (Before Building)
-
-**To prevent spec ambiguity**:
-- [ ] Scan for red flag words (valid, appropriate, handle, check, reasonable)
-- [ ] Add 3 worked examples for every calculation/transformation
-- [ ] Use "Explain to 5-year-old" test (can you describe it concretely?)
-- [ ] Replace abstract words with specific actions
-
-**To prevent builder misreads**:
-- [ ] Extract all constraints to top of spec (bold, prominent)
-- [ ] Add "DO NOT" statements for critical requirements
-- [ ] Use visual hierarchy (bold, numbered lists, code blocks)
-- [ ] Make specs scannable (key info visible in 30-second skim)
-
-**To prevent test problems**:
-- [ ] Write test cases FROM spec examples (not from memory)
-- [ ] List all edge cases in spec explicitly
-- [ ] Have someone else write tests from your spec (catches ambiguity)
-
-**To prevent design gaps**:
-- [ ] Run "Production Readiness Checklist" (8 questions):
-  1. Error handling - what if API fails?
-  2. Validation - what if input is null/empty/malformed?
-  3. Concurrency - what if two requests happen simultaneously?
-  4. Observability - how do we debug in production?
-  5. Performance - what if 1000 requests at once?
-  6. Security - can unauthorized users access?
-  7. Compliance - does this need audit trail?
-  8. Rollback - what if we need to undo?
-- [ ] Check happy path vs error path ratio (should be ~50/50, not 80/20)
-- [ ] Brainstorm 5 failure modes for each external dependency
-- [ ] Add cross-cutting concerns (logging, metrics, alerts)
-
-## Week 3 Deliverables Reference
-
-### Deliverable Time Budget (Friday 13:30-17:00, 210 minutes total)
-
-| # | Deliverable | Time | Strategy |
-|---|-------------|------|----------|
-| **D#1** | Problem framing & success metrics | 20 min | Revise Thursday draft against Marcus feedback |
-| **D#2** | Engagement intake & scope | 20 min | Revise Thursday draft, add scope boundaries |
-| **D#3** | Agentic architecture + ≥2 ADRs | 30 min | Revise Thursday draft, ensure ADRs have real trade-offs |
-| **D#4** | **Two capability specs** | **90 min** | **Heaviest!** Apply verification checklist |
-| **D#5** | Build-loop response memo | 15 min | Use Wednesday Cascade diagnosis |
-| **D#6** | Client feedback response | 20 min | Address each Marcus point concretely |
-| **D#7** | Validation plan | 10 min | Testing strategy before production |
-| **D#8** | Reflection | 10 min | Lessons learned, process improvements |
-| **D#9** | Self-spec build-loop reflection | 15 min | Run ONE D#4 spec through Claude Code |
-| | **TOTAL** | **230 min** | *You have 210 min - work fast!* |
-
-### D#1: Problem Framing & Success Metrics
-- What is actually broken (not just stated request)
-- Measurable outcomes for all stakeholder groups (MedFlex, hospitals, nurses)
-- "10x without 10x-ing" is not a technical requirement - figure out what it demands
-
-### D#2: Engagement Intake & Scope
-- Business context, stakeholder map, constraints, risks
-- MVP scope definition with explicit OUT-of-scope items and WHY
-- Two failed AI projects context (chatbot, recommendation engine)
-
-### D#3: Agentic Solution Architecture
-- Which workflows become agentic, at what delegation levels
-- **Minimum 2 ADRs** with:
-  - Alternatives considered (not just "we chose X")
-  - Trade-off analysis (consequences of each option)
-  - Why decision could be revisited (under what conditions)
-- Avoid "justification theater" - real trade-offs only
-
-### D#4: Two Production-Grade Capability Specifications ⚠️ CRITICAL
-- **90 minutes = 43% of exam time** - this is the heaviest deliverable
-- Precise enough for Claude Code to build from (buildability standard from Week 2)
-- Shared entities consistent across both specs
-- Where ambiguity unavoidable, state as assumption with confidence level
-- Apply verification checklist:
-  - [ ] No red flag words (valid, appropriate, handle)
-  - [ ] 3+ worked examples per calculation
-  - [ ] Constraints extracted to top
-  - [ ] DO/DO NOT statements for critical requirements
-  - [ ] Production readiness: error handling, validation, logging, etc.
-  - [ ] Edge cases listed explicitly
-  - [ ] API failure modes covered (timeout, 500, 429, 401, partial response)
-  - [ ] Happy path vs error path balanced (~50/50)
-
-### D#5: Build-Loop Response Memo (15 min)
-- Reference Wednesday's Cascade Public Libraries fixture diagnosis (from W3D3 exercise) - see `Deliverables/Build-loop-exercise-outcome-Andrzej_Bihun.md`
-- Classify what went wrong (spec gap / builder misread / unjustified addition / test issue)
-- Write corrective response in appropriate tone for each category:
-  - Spec ambiguity → rewrite spec (your voice, own the gap - "I should have...")
-  - Builder misread → re-prompt with spec quoted (professional, not punitive)
-  - Unjustified implementation choice → collaborative removal request (appreciate + reject + redirect to proper process)
-  - Test problem → diagnostic fix
-  - Legitimate clarification → acknowledge + revise + confirm (appreciation: "Good catch", "Thanks for...")
-- Apply same systematic diagnostic procedure from Wednesday exercise
-- DO NOT skip diagnosis - graded on classification accuracy, not just response quality
-
-**Key learning from W3D3**:
-- When spec flags uncertainty (Assumptions, Notes), own it as spec ambiguity even if wording seemed clear
-- Read Assumptions section first to catch flagged ambiguities
-- Unjustified choices need all 3 elements: appreciate thinking + reject feature + suggest proper process (spec change request)
-- Legitimate clarifications need appreciation to reinforce correct builder behavior
-
-### D#6: Client Feedback Response
-- Address Marcus Reyes CEO pushback professionally
-- Hold boundaries without alienating (neither cave nor stonewall)
-- For each pushback point: concede with concrete alternative OR hold scope with reasoning
-- "Yes, 6 weeks!" = capitulation (failure mode)
-- Stonewalling = failure mode
-- Honest replanning with scope discipline = success
-
-### D#7: Validation Plan
-- How to verify agentic system works before production
-- What to test, how to measure success
-- Acceptance criteria
-
-### D#8: Reflection Document
-- Process improvements, lessons learned
-- What would you do differently?
-- What did you learn about your own process?
-
-### D#9: Self-Spec Build-Loop Reflection (1 page) ⚠️ CRITICAL
-- Take ONE spec from D#4, run through Claude Code under exam conditions
-- Write 1-page reflection: what it built, what it asked, what you'd change
-- **Graded on diagnosis honesty, NOT code correctness**
-- **Broken build + honest diagnosis > working code by accident**
-- Avoid defensive reading: "Claude mostly got it right" when it clearly didn't
-- Good example: "Claude built X because my spec failed to distinguish Y from Z; I'd add worked example for case A"
-
-## Week 3 Schedule & Critical Timing
-
-### Monday (Virtual Day 1)
-**Coach delivers**: 1h orientation + calendar confirmation (Teams General)  
-**You do**: Read `spec-ambiguity-vs-builder-mistakes.md` end-to-end, audit Week 2 specs
-
-### Tuesday (Virtual Day 2)
-**You do**: Production-spec-checklist audit, review `discovery-questioning-patterns.md`
-
-### Wednesday (Virtual Day 3) - Build-Loop Diagnosis Day
-
-**09:00 CET - You deliver**: One-line classification prediction to critique pool
-```
-"The hardest part of build-loop diagnosis for me will be ___."
-```
-Examples: "...distinguishing spec ambiguity from builder misreads" OR "...catching design gaps I forgot to specify" OR "...avoiding defensive reading when diagnosing my own spec"
-
-**Participant prediction**: "The hardest part of build-loop diagnosis for me will be distinguishing genuine builder misreads from spec ambiguity that only felt clear to me."
-
-**09:00-10:30 CET - Coach delivers**: Live walkthrough on Coffee Subscription Credit Handler fixture (90 min), demonstrates all 5 categories + tone/response
-
-**Afternoon - Coach delivers**: Cascade Public Libraries Hold Queue fixture release (`W3D3-BuildLoop-Exercise.md`)
-
-**Afternoon - You do**: Solo diagnosis exercise on Cascade fixture (see `FDE/Week 3/W3D3-BuildLoop-Exercise.md`)
-- 8 signals to classify using 4-category framework
-- Each signal: Classification + Rationale + Response (2-4 sentences, correct tone)
-- Plus: 100-150 word reflection on hardest diagnostic move
-- Time budget: ~2.5 hours
-- Use systematic diagnostic procedure (see Build-Loop Diagnosis Framework section)
-
-**Critical exercise hints**:
-- Signal 1 (notification_deadline.py): Read R3 carefully - there's a trap
-- Two signals share the same category (don't force uniqueness)
-- One signal is legitimate clarification (Signal 8 likely)
-- Read each signal twice before classifying
-
-**EOD Wednesday - You deliver**: ✅ **COMPLETED** - Cascade diagnosis submitted (`Deliverables/Build-loop-exercise-outcome-Andrzej_Bihun.md`)
-- 8/8 classifications correct
-- All response tones appropriate for categories
-- Reflection identifies Cat 1 vs Cat 2 distinction as hardest challenge
-- Ready to apply same approach to Friday D#5
-
-### Thursday (Virtual Day 4) - Discovery & Initial Design
-
-**09:00 CET - Coach delivers**: Gate 3 scenario pack (`Gate3-Participant-Pack.md`) - MedFlex healthcare staffing
-
-**You do**: Read scenario end-to-end BEFORE discovery call
-
-**09:30-10:30 CET - Coach delivers**: Plays MedFlex stakeholder in live simulated discovery (60 min)
-
-**You do**: Ask questions, take notes, extract requirements, notice inconsistencies
-
-**Afternoon - You do**: Draft D#1 (problem framing), D#2 (intake & scope), D#3 (architecture + ADRs) - rough drafts OK
-
-**23:59 CET Thursday - You deliver**: Interim D#1-D#3 to squad lead (NOT GRADED - triggers CEO feedback generator)
-
-### Friday (Virtual Day 5) - Gate 3 Exam Day ⚠️
-
-**09:00 CET - Coach delivers**: Personalized Marcus Reyes (CEO) email with pushback tailored to YOUR Thursday submission
-
-**09:00-13:30 CET (4.5h) - You do**: UNTIMED PREPARATION ⚠️
-- **THIS IS NOT THE EXAM YET**
-- Read Marcus's pushback carefully
-- Decide which points to concede vs hold scope
-- Plan D#6 response strategy
-- Refine D#1-D#3 thinking against discovery + pushback
-- **DO NOT finalize deliverables** - this is thinking time
-
-**13:30-17:00 CET (3.5h) - You do**: TIMED GATE 3 EXAM ⏱️
-- Produce all 9 deliverables (final, polished, complete)
-- D#4 (two specs) = 90 min (heaviest deliverable)
-- Everything else = 120 min
-- Work efficiently - total time = 230 min, you have 210 min
-
-**17:00 CET SHARP - You deliver**: Single markdown folder with all 9 deliverables
-- ⚠️ **NOT EOD - 17:00 SHARP**
-- Anything not submitted by 17:00 is NOT graded
-
-**17:50-19:00 CET - Coach delivers**: 10-minute verbal defense (your specific slot confirmed by coach)
-- Coach probes one architectural decision + one weakness
-- "The CEO's two failed AI projects - how is yours different?"
-- "What kills this in production?"
-
-### Following Monday (Week 4)
-**Coach delivers**: Gate 3 results and feedback
+---
+
+## Anti-Patterns to Avoid
+
+1. **AI-as-a-feature on traditional matching** — deterministic system with LLM sprinkled on, not AI-native
+2. **Build-loop diagnostic stops at first impression** — name surface signal without reading spec + code together
+3. **Client feedback appeased, not addressed** — "Yes CEO, 6 weeks!" = capitulation
+4. **Self-spec reflection defends instead of diagnoses** — "mostly got it right" when it clearly didn't
+5. **No ADR trade-off analysis** — "we chose X because it's right" without alternatives/consequences = theater
+6. **Generic consulting templates** — ground everything in specific artefacts and constraints
+7. **Spec with only happy path** — error path should be ~50% of spec coverage
 
 ---
 
-## Common Timing Mistakes to Avoid
+## File Navigation
 
-❌ **WRONG**: "Friday 09:00-17:00 is the exam (8 hours)"  
-✅ **RIGHT**: 09:00-13:30 = prep time, 13:30-17:00 = exam time (3.5h)
+### Gate 3 scenario and requirements:
+- `FDE/Week 3/Gate3-Participant-Pack.md` — full scenario, deliverables, scoring guidance
 
-❌ **WRONG**: "I'll submit Friday EOD"  
-✅ **RIGHT**: "17:00 SHARP - no extensions"
+### Build-loop diagnostic reference:
+- `FDE/Reference/spec-ambiguity-vs-builder-mistakes.md` — diagnostic taxonomy
+- `Deliverables/Build-loop-exercise-outcome-Andrzej_Bihun.md` — your W3D3 results (reference for D#5)
+- `FDE/Week 3/W3D3-BuildLoop-Exercise.md` — Cascade Public Libraries fixture
 
-❌ **WRONG**: "Thursday 23:59 D#1-D#3 must be perfect"  
-✅ **RIGHT**: "Rough drafts fine - just input for CEO feedback"
+### Spec writing reference:
+- `FDE/Reference/production-spec-checklist.md` — cross-check D#4 buildability
+- `FDE/Reference/integration-spec-template.md` — template
 
-❌ **WRONG**: "Wednesday Cascade is a Gate 3 deliverable"  
-✅ **RIGHT**: "Not a deliverable, but I'll reuse diagnosis for Friday D#5"
+### Discovery preparation:
+- `FDE/Reference/discovery-questioning-patterns.md`
 
-## File Navigation Tips
+### ATX methodology:
+- `FDE/Reference/atx/atx-concepts.md`
 
-### To understand the business domain:
-Read `Specification/01_Domain_Orientation.md` and `02_Problem_Statement_and_Success_Metrics.md`
+---
 
-### To understand the agent specification:
-Read `Specification/06_Agent_Purpose_Document.md` (primary) and `10_Demo_Application_Design.md`
+## Critical Success Factors
 
-### To understand Week 2 deliverables:
-Read `Specification/SUBMISSION_SUMMARY.md` or the consolidated `Gate2-Andrzej-Bihun.md`
+✅ **Genuinely AI-native solution** — agents as the mechanism, not a feature label
+✅ **Accurate build-loop diagnosis** — classify signals correctly, right tone per category
+✅ **Problem framing addresses real problem** — not just stated request
+✅ **Honest self-spec build-loop reflection** — diagnosis quality > code correctness
+✅ **Professional client feedback response** — hold scope, don't cave, don't stonewall
+✅ **Specifications enable near-autonomous build** — no guessing at intent
 
-### To understand Week 3 requirements:
-Read `FDE/Week 3/README.md` (complete 152-line guide) and `Week3_findings.md` (participant analysis)
+## Verbal Defense Preparation
 
-### To prepare for Wednesday build-loop diagnostic:
-Read `FDE/Week 3/W3D3-BuildLoop-Exercise.md` (Cascade Public Libraries exercise with 8 signals)
+Coach probes:
+- "The CEO's two failed AI projects — how is yours different?"
+- "What kills this in production?"
+- One specific architectural decision + one acknowledged weakness
 
-### To understand FDE methodology:
-Read `FDE/Reference/atx/atx-concepts.md` and `FDE/Week 2/references/atx-*.md` files
+Good defense: "I noticed that gap during the build-loop reflection and here's what I'd change"
+Bad defense: "The spec is precisely correct"
 
-### To prepare for build-loop diagnosis:
-Read `FDE/Reference/spec-ambiguity-vs-builder-mistakes.md` (CRITICAL before Wednesday)
-
-## Critical Success Factors for Week 3
-
-### What Coaches Look For
-
-✅ **Genuinely AI-native solution**
-- Agents are the mechanism, not a feature label on traditional systems
-- Coach will ask: "Show me the agent decision - where reasoning determines an outcome a rule-based system couldn't"
-- NOT: Deterministic matcher with LLM call sprinkled on top
-
-✅ **Accurate build-loop diagnosis**
-- Classify signals correctly (spec gap vs builder misread vs test issue vs design gap)
-- Write right response in right tone for each category
-- Go beyond surface signal (test fails) to read spec alongside code (test reflects real spec gap)
-
-✅ **Problem framing addresses real problem**
-- Not just stated request ("10x without 10x-ing" is not a technical requirement)
-- What does it actually demand of architecture?
-
-✅ **Honest self-spec build-loop reflection**
-- Spec producing broken build but diagnosed precisely > working code by accident
-- Graded on diagnosis quality, not build correctness
-- Avoid defensive reading: "Claude mostly got it right" when it clearly missed the point
-
-✅ **Professional client feedback response**
-- Hold boundary without alienating (neither cave nor stonewall)
-- Scope discipline with honest replanning
-- Address each pushback point concretely
-
-✅ **Specifications enable near-autonomous build**
-- AI agent shouldn't need to guess at intent
-- Where ambiguity unavoidable, name it as assumption with confidence level
-- Production readiness checklist covered
-
-### Common Week 3 Failure Modes
-
-❌ **AI-as-a-feature on traditional matching** - Deterministic matcher with LLM, not AI-native
-
-❌ **Build-loop diagnostic stops at first impression** - Names surface signal without reading spec + code together
-
-❌ **Client feedback appeased, not addressed** - "Yes CEO, 6 weeks!" = capitulation that breaks at week 4
-
-❌ **Self-spec reflection defends instead of diagnoses** - Bluffing when Claude clearly missed the point
-
-❌ **No ADR trade-off analysis** - "We chose X because it's right" without alternatives/consequences = theater
-
-### Pre-Exam Preparation Checklist
-
-**Before Wednesday 09:00**:
-- [ ] Read `spec-ambiguity-vs-builder-mistakes.md` end-to-end
-- [ ] Submit classification prediction: "The hardest part... will be ___"
-- [ ] Audit one Week 2 activity for ambiguous requirements
-
-**Wednesday Afternoon** (CRITICAL PRACTICE):
-- [x] Complete W3D3-BuildLoop-Exercise.md (Cascade Public Libraries)
-- [x] Classify all 8 signals using systematic diagnostic procedure (8/8 correct)
-- [x] Write responses in correct tone for each category
-- [x] Write 100-150 word reflection on hardest diagnostic move
-- [x] Submit to squad lead by EOD Wednesday: `Deliverables/Build-loop-exercise-outcome-Andrzej_Bihun.md`
-- [x] **Save your analysis** - reuse diagnostic approach for Friday D#5
-
-**Before Thursday 09:30**:
-- [ ] Read `discovery-questioning-patterns.md`
-- [ ] Prepare question templates for discovery session
-- [ ] Note-taking system ready
-
-**Before Friday 09:00**:
-- [ ] Markdown folder structure ready for 9 deliverables
-- [ ] Claude Code tested and working (for D#9)
-- [ ] Week 2 specs available for reference
-- [ ] Verification checklist printed/available
-- [ ] Wednesday Cascade diagnosis available for D#5 reference
-
-**Before Friday 13:30** (use 09:00-13:30 prep time):
-- [ ] Marcus pushback read and annotated
-- [ ] D#6 strategy planned (concede vs hold scope points)
-- [ ] D#1-D#3 refined against discovery + pushback
-- [ ] D#4 outline prepared (two specs structure)
-- [ ] Review Wednesday Cascade classifications for D#5 pattern
-
-## Session-Specific Reminders
-
-- This is a learning environment - focus is on skill demonstration, not production deployment
-- Week 3 focuses on AI-native design (agents as mechanism) vs traditional software with AI features
-- Honest diagnosis of failures is valued over perfect outcomes
-- Scope discipline matters - explicitly call out what's OUT of scope and why
-- Client stakeholder management is part of the evaluation (professional pushback handling)
-- Time management is critical - D#4 (90 min) is 43% of exam time, plan accordingly
+---
 
 ## Contact & Support
 
-For FDE program questions, participant should:
+For FDE program questions:
 - Check Teams General channel for exact physical dates for virtual days
 - Confirm verbal defense slot with coach on Friday
 - Ask squad lead about submission format/location
-- Reference Week 3 README for any schedule or requirement clarifications
