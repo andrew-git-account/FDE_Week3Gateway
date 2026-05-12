@@ -15,8 +15,8 @@ Hospital Request (email/portal/phone)
         │
         ▼
 ┌──────────────────────┐
-│  Agent 1: Intake     │  Fully Agentic
-│  Parsing             │  Free text → structured shift record
+│  Agent 1: Intake     │  Agent-Led + Human Oversight
+│  Parsing             │  Free text → structured shift record (5-min preview)
 └──────────┬───────────┘
            │ Structured ShiftRequest
            ▼
@@ -46,10 +46,12 @@ Coordinator Oversight Dashboard: async review queue, escalation inbox, audit tra
 
 **Why agentic:** Hospital emails use varied formats, abbreviations, and implicit credential requirements. A rule-based parser would require hospital-specific templates. LLM handles variability.
 
-**Delegation:** Fully Agentic  
+**Delegation:** Agent-Led + Human Oversight  
 **Trigger:** New item enters ServiceNow queue (email/portal/phone captured)  
 **Output:** Structured ShiftRequest (shift date/time, location, required credentials, specialty, hospital ID, urgency)  
-**Escalation trigger:** Confidence in parsed output <80%, or required fields cannot be extracted → flag for coordinator to clarify with hospital  
+**Oversight mechanism:** Parsed ShiftRequest enters a 5-minute coordinator preview queue before releasing to matching. If untouched in 5 minutes, proceeds automatically. Coordinator can correct any field before matching begins.  
+**Rationale for downgrade from Fully Agentic:** A confident wrong parse (e.g., "ICU RN with ACLS" read as generic RN) produces no escalation signal but drives the entire downstream pipeline — Agent 2 will match the wrong nurse at high confidence. The error is invisible at source and attributed to the matching agent. The 5-minute preview catches this at zero speed cost against the 4.2h baseline.  
+**Escalation trigger:** Confidence in parsed output <80%, or required fields cannot be extracted → flag for coordinator to clarify with hospital directly  
 
 ---
 
@@ -69,7 +71,7 @@ Coordinator Oversight Dashboard: async review queue, escalation inbox, audit tra
 
 | Confidence | Delegation | Action |
 |------------|------------|--------|
-| >85% | Fully Agentic | Auto-submit proposal to hospital; log decision |
+| >85% | Fully Agentic (Phase 2+) / Agent-Led shadow review (Phase 1) | Auto-submit proposal to hospital; log decision. Phase 1 only: coordinator sees all HIGH-confidence proposals in audit log and can flag errors within 30 min (non-blocking). Shadow review removed after 30-day calibration confirms mismatch rate <3% in HIGH band. |
 | 70-85% | Agent-Led + Human Oversight | Auto-submit; coordinator gets async alert with 30-min recall window |
 | <70% | Human-Led + Agent Support | Agent surfaces ranked candidates with rationale; coordinator makes final decision |
 | No viable match | Human Only | Escalate to coordinator with summary of why no match found |
@@ -84,13 +86,23 @@ Coordinator Oversight Dashboard: async review queue, escalation inbox, audit tra
 
 **Why agentic:** Current process: notify nurse → assume accepted → find out at shift time if no-show. Agent introduces a confirmation state machine that detects risk before the shift.
 
-**Confirmation state machine:**
+**Confirmation state machine (happy path — Fully Agentic):**
 - T+0: Hospital accepts → agent sends nurse confirmation request (SMS/email per preference)
 - T+24h: No confirmation received → escalate to coordinator
-- T+2h before shift: Confirmed nurse not yet en route → alert coordinator
+- T-2h before shift: Confirmed nurse not yet acknowledged → alert coordinator
 - No-show detected (hospital calls) → immediately open emergency replacement flow (re-triggers Agent 2)
 
-**Delegation:** Fully Agentic for routine confirmation; Human-Led for unconfirmed or conflict cases
+**Failure mode handling (explicit):**
+
+| Failure | Response |
+|---------|----------|
+| SMS/email delivery fails | Retry 3× over 30 min; if all fail → escalate to coordinator for manual nurse contact |
+| Nurse cancels by phone (no system signal) | Requires coordinators to log phone cancellations in system; Agent 3 reads cancellation flag. This is a process change requirement for Phase 2 launch. |
+| Ambiguous reply ("will try", "probably") | Flag as unconfirmed; escalate to coordinator for interpretation |
+| State machine stops advancing (system failure) | Heartbeat check every 15 min; alert on-call if no state transition after expected window |
+| Emergency re-match at T=0 | Agent 2 re-triggered immediately; coordinator notified in parallel; hospital told replacement is in progress (human coordinator makes that call) |
+
+**Delegation:** Fully Agentic for happy path; Human-Led for any failure mode above
 
 **Concurrency conflict resolution:** If two hospitals accept the same nurse before reservation expires (race condition), agent immediately notifies both coordinators. Second hospital gets escalated to human for manual re-match with priority queue.
 
@@ -100,8 +112,8 @@ Coordinator Oversight Dashboard: async review queue, escalation inbox, audit tra
 
 | Workflow Step | Archetype | Rationale |
 |---------------|-----------|-----------|
-| Free-text intake parsing | Fully Agentic | Low risk; output feeds matching queue, not hospital |
-| HIGH-confidence matching | Fully Agentic | >85% score; matches current senior coordinator quality bar |
+| Free-text intake parsing | Agent-Led + Human Oversight | 5-min coordinator preview before matching; bad parse cascades silently through entire pipeline if unchecked |
+| HIGH-confidence matching | Fully Agentic (Phase 2+); shadow review Phase 1 | Phase 1 runs without preference data — threshold unvalidated until 30-day calibration confirms <3% mismatch |
 | MEDIUM-confidence matching | Agent-Led + Human Oversight | Async coordinator review preserves quality without blocking speed |
 | LOW-confidence matching | Human-Led + Agent Support | Agent narrows candidates; coordinator decides |
 | Nurse confirmation follow-up | Fully Agentic | Deterministic state machine; no judgment required |
