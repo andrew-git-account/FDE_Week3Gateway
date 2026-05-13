@@ -14,7 +14,7 @@ This plan covers three validation concerns across all three agents and their int
 2. **Failure modes** — what breaks, how badly, and what mitigates it?
 3. **Compliance and regulatory risk** — what legal or regulatory exposure does the system create?
 
-Validation is phased to match the delivery plan. Phase 1 (Weeks 1-8) validates Agent 1 + Agent 2 HIGH-confidence path only. Phase 2 adds Agent 3 and MEDIUM-confidence routing. Phase 3 adds the reputation model and predictive signals.
+Validation is phased to match the delivery plan. Phase 1 (Weeks 1-6) validates Agent 1 + Agent 2 HIGH and MEDIUM-confidence routing. Phase 2 adds Agent 3 and the confirmation state machine. Phase 3 adds the reputation model and predictive signals.
 
 ---
 
@@ -98,7 +98,7 @@ Before removing Phase 1 shadow review and moving to Phase 2:
 | AUTO_SUBMIT mismatch rate | < 3% over 30 days | Raise confidence threshold to 0.90; investigate scoring weights |
 | ASYNC_REVIEW coordinator recall rate | < 10% | If high: revert ASYNC_REVIEW to synchronous approval for specific credential types |
 | NO_MATCH rate | < 15% of daily volume | If high: supply-side gap; alert Kim; do not lower confidence threshold |
-| Coordinator adoption of dashboard | > 80% of ASYNC_REVIEW proposals reviewed within 30 min | If low: Marcus to drive adoption; consider push notification escalation |
+| Coordinator adoption of dashboard | > 80% of ASYNC_REVIEW proposals reviewed within 90 min | If low: Marcus to drive adoption; consider push notification escalation |
 
 ---
 
@@ -222,9 +222,9 @@ Before removing Phase 1 shadow review and moving to Phase 2:
 | Pre-Phase 1 | Confirm ServiceNow API access and nurse DB schema | Aaron | Must complete before build |
 | Pre-Phase 1 | Confirm credential taxonomy against state requirements | Linda | Must complete before Phase 1 go-live |
 | Pre-Phase 1 | Confirm availability data staleness SLA | Kim | Must complete before Phase 1 go-live |
-| Phase 1 (Weeks 1-8) | Shadow review calibration: track AUTO_SUBMIT flag rate daily | Coordinator team | <3% flag rate = gate to Phase 2 |
-| Phase 1 (Weeks 1-8) | Weekly LLM regression run: Agent 1 parsing accuracy | Engineering | Alert if accuracy drops >2% |
-| Phase 1 (Weeks 1-8) | Dashboard adoption tracking: ASYNC_REVIEW review rate | Marcus/Kim | >80% reviewed in 30 min = Phase 2 prerequisite |
+| Phase 1 (Weeks 1-6) | Shadow review calibration: track AUTO_SUBMIT flag rate daily | Coordinator team | <3% flag rate = gate to Phase 2 |
+| Phase 1 (Weeks 1-6) | Weekly LLM regression run: Agent 1 parsing accuracy | Engineering | Alert if accuracy drops >2% |
+| Phase 1 (Weeks 1-6) | Dashboard adoption tracking: ASYNC_REVIEW review rate | Marcus/Kim | >80% reviewed in 90 min = Phase 2 prerequisite |
 | Phase 2 entry | No-show rate baseline established (pre-Agent 3) | Operations | Baseline required to measure Phase 2 impact |
 | Phase 2 (Weeks 9-16) | Confirmation rate tracking: % explicit confirmations | Agent 3 metrics | <85% → review nurse UX |
 | Phase 2 (Weeks 9-16) | No-show rate: compare to pre-Phase 2 baseline | Operations | Target <7% by Week 16 |

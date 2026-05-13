@@ -129,7 +129,7 @@ Coordinator Oversight Dashboard: async review queue, escalation inbox, audit tra
 
 ### ADR-01: Confidence Threshold for Autonomous Proposal Submission
 
-**Decision:** Set autonomous submission threshold at >85% confidence. 70-85% auto-submits with a 30-minute coordinator recall window.
+**Decision:** Set autonomous submission threshold at >85% confidence. 70-85% auto-submits with a 90-minute coordinator recall window.
 
 **Context:** The core tension is speed vs. quality. MedFlex competes on response time; every minute of coordinator approval adds latency. But the 7% mismatch rate and hospital relationship risk mean unchecked auto-submission could increase mismatch.
 
@@ -139,9 +139,9 @@ Coordinator Oversight Dashboard: async review queue, escalation inbox, audit tra
 |--------|------|------|
 | A: All matches require coordinator approval | Zero mismatch risk | No throughput gain; defeats the engagement purpose |
 | B: Auto-submit >70% confidence | Maximum speed; ~90% autonomous | Higher mismatch risk in 70-85% band; hospital trust damage |
-| **C: Auto-submit >85%; async recall for 70-85%** | **Balances speed and quality; coordinator not blocked** | **Coordinator must respond within 30 min; requires dashboard adoption** |
+| **C: Auto-submit >85%; async recall for 70-85%** | **Balances speed and quality; coordinator not blocked** | **Coordinator must respond within 90 min; requires dashboard adoption** |
 
-**Decision rationale:** Option C gives Marcus the speed benefit immediately (HIGH confidence = ~60-65% of daily volume) while maintaining a human safety net for edge cases. The 30-minute window means hospital still gets a fast response; coordinator isn't in the critical path.
+**Decision rationale:** Option C gives Marcus the speed benefit immediately (HIGH confidence = ~60-65% of daily volume) while maintaining a human safety net for edge cases. The 90-minute window covers at least one coordinator batch-check cycle; coordinator isn't in the critical path.
 
 **Trade-offs accepted:** ~30-35% of matches still touch coordinator queue in Phase 1. This is intentional — trust must be built before lowering the threshold.
 
