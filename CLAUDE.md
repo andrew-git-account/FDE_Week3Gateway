@@ -11,12 +11,23 @@ This is an FDE (Full-Delivery Engineer) learning program repository for Week 3. 
 - **Week 3 Current**: End-to-end AI-native engagement simulation (MedFlex healthcare staffing scenario)
 - **Gate 3 Scenario**: `FDE/Week 3/Gate3-Participant-Pack.md` — released Thursday 09:00 CET
 
-### Current Status (Thursday Week 3)
+### Current Status (post-Thursday, pre-exam)
 - ✅ Gate 3 scenario pack received and read
 - ✅ Discovery role-play with Marcus Reyes completed (09:30-10:30 CET)
-- ✅ W3D3 Build-loop exercise submitted: `Deliverables/Build-loop-exercise-outcome-Andrzej_Bihun.md`
-- **ACTIVE NOW**: Draft D#1, D#2, D#3 for Thursday 23:59 CET interim submission
+- ✅ W3D3 Build-loop exercise submitted: `FDE/Week 3/Build-loop-exercise-outcome-Andrzej_Bihun.md`
+- ✅ D#1 draft: `Deliverables/01-problem-framing.md`
+- ✅ D#2 draft: `Deliverables/02-intake-scope.md`
+- ✅ D#3 draft: `Deliverables/03-architecture.md`
+- ✅ D#4a capability spec: `Deliverables/04a-capability-spec-intake-parsing.md`
+- ✅ D#4b capability spec: `Deliverables/04b-capability-spec-shift-matching.md`
+- ✅ D#4c capability spec: `Deliverables/04c-capability-spec-confirmation-noshow.md`
+- ✅ D#5 build-loop response: `Deliverables/05-build-loop-response.md` (8 Cascade signals, all classified)
+- ✅ D#7 validation plan: `Deliverables/07-validation-plan.md`
+- ✅ D#9 self-spec reflection: `Deliverables/09-self-spec-reflection.md` (6 gaps diagnosed against D#4a/b)
+- ✅ CIO presentation PDF: `Deliverables/MedFlex-CIO-Presentation.pdf` (generated via `Deliverables/generate_cio_presentation.py`)
+- ✅ Demo app built and verified: `demo_app/` — Streamlit, three connected pages, all routing scenarios working
 - **FRIDAY**: Exam 13:30-17:00 CET, verbal defense 17:50-19:00 CET
+- **OUTSTANDING**: D#6 (awaits Marcus pushback memo, Friday 09:00), D#8 (reflection, written at exam end), D#1–D#3 revisions (against Marcus feedback)
 
 ### Key Objectives for Week 3
 1. Execute complete FDE engagement: discovery → specification → build-loop correction → stakeholder management
@@ -139,6 +150,13 @@ This is an FDE (Full-Delivery Engineer) learning program repository for Week 3. 
 - **Graded on diagnosis honesty, NOT code correctness**
 - Broken build + honest diagnosis > working code by accident
 - Avoid: "Claude mostly got it right" when it clearly didn't
+- **DRAFTED** — based on actual demo app build. 6 gaps identified:
+  1. Double deduction on assumed credentials — Spec Ambiguity (worked example contradicts deduction table)
+  2. `hosp_conf` excluded from confidence sum — Builder Misread
+  3. Abbreviated time suffix `7p`/`7a` not matched — Spec Gap
+  4. No stopwords for ALL-CAPS scan — Design Gap
+  5. Assumed credentials in hard filter: main criterion vs. edge case row contradict — Spec Ambiguity (internal contradiction across D#4a/D#4b)
+  6. `assumed_penalty = 0.10` added without spec authorisation — Unjustified Addition
 
 ---
 
@@ -360,14 +378,71 @@ DO NOT: [forbidden actions]
 
 ---
 
+## Demo App (`demo_app/`)
+
+### Purpose
+Local Streamlit web app demonstrating the three-agent MedFlex flow end-to-end. No database, no external integrations, no LLM — rule-based stubs throughout. Used for D#9 self-spec build-loop reflection.
+
+### How to Run
+```bash
+cd demo_app
+python -m streamlit run Home.py --server.headless true --browser.gatherUsageStats false
+# Opens at http://localhost:8501
+```
+
+### Demo Scenarios (verified routing outcomes)
+| Email | Agent 1 result | Agent 2 routing | Key driver |
+|-------|---------------|-----------------|------------|
+| Easy (St. Mary's, explicit ICU RN ACLS BLS) | PENDING_REVIEW, 100% confidence | AUTO_SUBMIT (0.955) | Sarah Johnson exact match, no assumed creds |
+| Medium (Springfield General, "critical care" + "peds unit") | PENDING_REVIEW, 95% confidence | ASYNC_REVIEW (0.817) | 3 assumed creds → −0.10 penalty drops below 0.85 |
+| Hard ("need a nurse ASAP for our ward") | ESCALATED, 10% confidence | Blocked (coordinator must override) | Missing date/time/hospital/credentials |
+
+### Key Design Decisions (non-obvious)
+- **Hard filter only checks `required_credentials`** (confirmed), not `assumed_credentials`. Assumed creds are soft signals — treating them as hard requirements caused NO_MATCH on the medium scenario (Pediatrics from "peds unit" blocked all ICU nurses).
+- **`assumed_penalty = 0.10`** applied in `shift_matcher.run_matching()` when `req.assumed_credentials` is non-empty. Reduces routing confidence without changing the displayed score decomposition.
+- **`MatchProposal.confidence_score` stores the adjusted (post-penalty) score**, not the raw soft-score total. This ensures the number shown in the UI is consistent with the routing decision.
+- **Nurse reservation** — 15-minute in-memory soft-lock per nurse in `st.session_state["reservations"]`. If all passing nurses are reserved, top candidate displayed without reservation.
+- **`st.session_state` keys**: `shift_request` (Agent 1→2), `match_proposal` (Agent 2→3), `nurse_assignment` (Agent 3 internal), `reservations` (Agent 2 internal).
+
+### Stub Data Design
+Nurses engineered to produce varied outcomes for the same ICU shift (St. Mary's Boston):
+- Sarah Johnson: 3mi, 0.92 reliability, HOSP-001 pref 0.90 → AUTO_SUBMIT top pick
+- Michael Chen: 12mi, CCRN, HOSP-001 pref 0.70 → passes, lower score
+- James Rodriguez: 35mi, 0.95 reliability → distance penalty
+- David Kim: PICU not ICU → passes only if no ICU required in confirmed creds
+- Emma Wilson, Lisa Park: fail hard filter for ICU shifts (no ICU credential)
+
+---
+
 ## File Navigation
 
 ### Gate 3 scenario and requirements:
 - `FDE/Week 3/Gate3-Participant-Pack.md` — full scenario, deliverables, scoring guidance
 
+### Completed deliverables:
+- `Deliverables/01-problem-framing.md` — D#1 draft
+- `Deliverables/02-intake-scope.md` — D#2 draft
+- `Deliverables/03-architecture.md` — D#3 draft
+- `Deliverables/04a-capability-spec-intake-parsing.md` — Agent 1 spec (shared entity glossary, 6 requirements)
+- `Deliverables/04b-capability-spec-shift-matching.md` — Agent 2 spec (hard filter, soft scoring, routing, Phase 1 shadow review)
+- `Deliverables/04c-capability-spec-confirmation-noshow.md` — Agent 3 spec (state machine, reply classification, retry schedule)
+- `Deliverables/05-build-loop-response.md` — D#5: 8 Cascade Public Libraries signals classified (3 builder misread, 2 unjustified choice, 1 test/env, 1 spec gap, 1 legitimate clarification)
+- `Deliverables/07-validation-plan.md` — accuracy targets, failure modes, compliance risks, drift, SPoFs
+- `Deliverables/09-self-spec-reflection.md` — D#9: 6 gaps diagnosed against D#4a/D#4b actual build; 4 spec-owned, 1 builder misread, 1 unjustified addition
+- `Deliverables/MedFlex-CIO-Presentation.pdf` — 5-slide CIO deck (generated via `generate_cio_presentation.py`)
+- `FDE/Week 3/Build-loop-exercise-outcome-Andrzej_Bihun.md` — W3D3 exercise submission (reference for D#5)
+
+### Demo app:
+- `demo_app/Home.py` — entry point + flow overview
+- `demo_app/core/intake_parser.py` — rule-based parser (regex date/time, credential taxonomy, confidence scoring)
+- `demo_app/core/shift_matcher.py` — hard filter + soft scoring + routing + reservation
+- `demo_app/core/confirmation_agent.py` — state machine + reply classification
+- `demo_app/stubs/nurse_db.py` — 6 hardcoded nurses
+- `demo_app/stubs/hospital_registry.py` — 3 hospitals + email domain lookup
+
 ### Build-loop diagnostic reference:
 - `FDE/Reference/spec-ambiguity-vs-builder-mistakes.md` — diagnostic taxonomy
-- `Deliverables/Build-loop-exercise-outcome-Andrzej_Bihun.md` — your W3D3 results (reference for D#5)
+- `FDE/Week 3/Build-loop-exercise-outcome-Andrzej_Bihun.md` — your W3D3 results (reference for D#5)
 - `FDE/Week 3/W3D3-BuildLoop-Exercise.md` — Cascade Public Libraries fixture
 
 ### Spec writing reference:

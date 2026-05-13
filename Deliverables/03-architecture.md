@@ -71,8 +71,8 @@ Coordinator Oversight Dashboard: async review queue, escalation inbox, audit tra
 
 | Confidence | Delegation | Action |
 |------------|------------|--------|
-| >85% | Fully Agentic (Phase 2+) / Agent-Led shadow review (Phase 1) | Auto-submit proposal to hospital; log decision. Phase 1 only: coordinator sees all HIGH-confidence proposals in audit log and can flag errors within 30 min (non-blocking). Shadow review removed after 30-day calibration confirms mismatch rate <3% in HIGH band. |
-| 70-85% | Agent-Led + Human Oversight | Auto-submit; coordinator gets async alert with 30-min recall window |
+| >85% | Fully Agentic (Phase 2+) / Agent-Led shadow review (Phase 1) | Auto-submit proposal to hospital; log decision. Phase 1 only: coordinator sees all HIGH-confidence proposals in audit log and can flag errors within 90 min (non-blocking). Leading drift signals tracked weekly from week 2 (acceptance rate trend + flag rate). Shadow review removed after 30-day calibration. |
+| 70-85% | Agent-Led + Human Oversight | Auto-submit; coordinator gets async alert with 90-min recall window; unreviewed expiry escalates to team lead, not auto-cleared |
 | <70% | Human-Led + Agent Support | Agent surfaces ranked candidates with rationale; coordinator makes final decision |
 | No viable match | Human Only | Escalate to coordinator with summary of why no match found |
 
@@ -177,27 +177,29 @@ Coordinator Oversight Dashboard: async review queue, escalation inbox, audit tra
 
 ---
 
-### ADR-03: Coordinator Oversight Model (Async vs. Synchronous)
+### ADR-03: Coordinator Oversight Model (Async vs. Synchronous) — **Revised after Marcus feedback**
 
-**Decision:** Coordinator oversight of MEDIUM-confidence cases is asynchronous (30-minute recall window after agent submits), not synchronous (approve before submission).
+**Decision:** Coordinator oversight of MEDIUM-confidence cases is asynchronous with a **90-minute recall window** (revised from 30 minutes). Original spec assumed continuous dashboard monitoring; Kim's operational input confirmed coordinators batch-check the queue every 1–2 hours during volume spikes.
 
-**Context:** Synchronous approval kills the speed advantage. Async oversight maintains quality control without blocking the proposal.
+**Context:** Synchronous approval kills the speed advantage. Async oversight maintains quality control without blocking the proposal. The window length is critical: too short and it expires before coordinators can act; treating an unreviewed expiry as implicit approval is a risk Marcus correctly identified.
 
 **Alternatives considered:**
 
 | Option | Pros | Cons |
 |--------|------|------|
 | A: Synchronous approval (block until reviewed) | Zero coordinator bypass | Adds latency; coordinator becomes bottleneck again |
-| **B: Async recall window (30 min)** | **Hospital gets fast response; coordinator can intervene** | **If coordinator misses the window, proposal stands unchecked** |
-| C: Post-submission audit only | No latency impact | No ability to correct before hospital sees the match |
+| B: Async recall window (30 min) — original design | Hospital gets fast response | Expires during peak hours before coordinator batch-checks; 30 min < batch-check interval of 60–120 min |
+| **C: Async recall window (90 min) + escalate on lapse** | **Matches real coordinator workflow; unreviewed = escalated, not approved** | **Hospital sees a slightly longer window before proposal finalises; still faster than current 4.2h baseline** |
+| D: Post-submission audit only | No latency impact | No ability to correct before hospital sees the match |
 
-**Decision rationale:** Option B matches how experienced coordinators actually work — they glance at the queue, spot problems, and intervene. The 30-minute window gives them that without making them gatekeepers.
+**Decision rationale:** Option C is the right response to Kim's input. The 90-minute window covers at least one batch-check cycle. Crucially, an expired unreviewed proposal is now escalated to team lead — it is never silently logged as coordinator-cleared. This directly addresses Marcus's question: "What happens to the proposal when that window lapses unreviewed?"
 
-**Trade-offs accepted:** Some coordinators may not check the dashboard consistently, especially during peak hours. Mitigation: push notification to coordinator's preferred channel; escalation alert if dashboard unreviewed for >20 min during business hours.
+**Trade-offs accepted:** A small number of proposals may have a longer time-to-confirmation (up to 90 min + 15 min team lead window vs. the original 30 min). For hospital response time this is still a 3–4× improvement over the 4.2h baseline. The lapse-escalation adds a new team lead workload that must be factored into staffing.
 
 **Revisitation conditions:**
-- If coordinator recall rate is high (>10% of MEDIUM proposals recalled) → async window may not be sufficient; consider reverting to sync for specific hospitals or credential types
-- Marcus's team resistance to dashboard adoption → escalate to Kim for process change management
+- If coordinator recall rate is high (>10% of MEDIUM proposals recalled within the 90-min window) → 90 min may not be long enough; consider extending or flagging specific hospital/credential combinations as HUMAN_ESCALATE
+- If LAPSED_UNREVIEWED rate is low (<5%) → window may be excessive; consider shortening to 60 min after 30 days of data
+- If team lead escalation volume is too high → investigate coordinator workflow adoption; escalate to Kim for process change management
 
 ---
 
@@ -220,8 +222,15 @@ Coordinator Oversight Dashboard: async review queue, escalation inbox, audit tra
 
 | Phase | Scope | Target | Timeline |
 |-------|-------|--------|----------|
-| Phase 1 | Agent 1 + Agent 2 (HIGH only) + Dashboard | 50% autonomous; <1h fill time | Weeks 1-8 |
-| Phase 2 | MEDIUM auto-submit + Agent 3 confirmation loop | 75% autonomous; no-show rate decline | Weeks 9-16 |
+| Phase 1 | Agent 1 + Agent 2 (HIGH + MEDIUM routing) without dashboard UI — coordinators work from raw alerts + audit log | 50% autonomous; <1h fill time; board-demo-ready | Weeks 1-6 |
+| Phase 1b | Dashboard UI (coordinator review queue, audit trail, recall interface) | Full coordinator workflow adoption | Weeks 7-8 |
+| Phase 2 | Agent 3 confirmation loop + no-show prevention | 75% autonomous; no-show rate decline | Weeks 9-16 |
 | Phase 3 | Reputation model; predictive no-show; LOW confidence assist | 85% autonomous; coordinator = exception manager | Weeks 17-24 |
 
-**Phase 1 is the 8-week ROI signal Marcus is asking for.** It does not require the full architecture — it proves the matching agent works on the highest-confidence subset, demonstrating value before Phase 2 investment is approved.
+**Phase 1 board demo target is week 6.** Dashboard UI is deferred to weeks 7–8. Coordinators work off raw alerts during weeks 1–6 — acceptable operational trade-off to hit Marcus's board deadline. The matching agent functionality is unchanged; only the review UX is deferred.
+
+**What is NOT in Phase 1 (deferred to maintain week-6 commitment):**
+- Coordinator review dashboard UI
+- Full Agent 3 confirmation state machine
+- Non-email intake channels (portal and phone remain manual)
+- Reputation model (data collection begins Phase 1; model trained Phase 2)

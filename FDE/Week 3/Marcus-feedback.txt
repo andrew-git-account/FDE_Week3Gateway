@@ -1,0 +1,11 @@
+Andrzej — read your draft last night. Three things I need answered before I approve Phase 1.
+
+Your Phase 1 is 8 weeks. My board update is in 6 — I need something I can demo, not a 2-week miss. You've scoped three systems; tell me what you'd cut or defer to get the matching agent running on real volume by week 6. If the answer is "skip the dashboard for now and have coordinators work off raw alerts," say that. If the answer is something else, walk me through it.
+
+Your plan for HIGH-confidence auto-submit is to run it for 30 days and check the mismatch rate at the end. Mismatch only shows up after a hospital calls to say the wrong nurse showed up — by then the proposal has already gone, been accepted, and I'm on the hook for the damage. What does the agent surface during the match itself that tells me it's drifting before a hospital picks up the phone? I need a signal I can look at in week 2, not a number I calculate on day 30.
+
+I got Kim on the phone yesterday and had her look at your MEDIUM-confidence model. Her concern was specific: my coordinators are already batch-checking the ServiceNow queue every hour or two when volume spikes — they're not sitting there watching it continuously. Your 30-minute recall window assumes a coordinator catches the alert during what may be our busiest part of the day. What happens to the proposal when that window lapses unreviewed and the match turns out to be wrong? That's the scenario I need you to answer for.
+
+I want your response by end of Friday. Board update is the following Friday and I need a 6-week plan I can walk in with, not a roadmap that still has an open question where the timeline should be.
+
+— Marcus
