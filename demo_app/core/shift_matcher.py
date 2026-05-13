@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional
 
 from core.models import (
@@ -129,7 +129,6 @@ def try_reserve(nurse_id: str, reservations: dict) -> bool:
     now = datetime.utcnow()
     if nurse_id in reservations and reservations[nurse_id] > now:
         return False
-    from datetime import timedelta
     reservations[nurse_id] = now + timedelta(minutes=15)
     return True
 
@@ -201,6 +200,10 @@ def run_matching(req: ShiftRequest, nurses: list, reservations: dict) -> MatchPr
     adjusted_confidence = max(0.0, selected.score_breakdown.total - assumed_penalty)
     routing = route(adjusted_confidence)
 
+    proposed_at = datetime.utcnow()
+    # 90-min recall window for ASYNC_REVIEW (matches coordinator batch-check cycle per Kim)
+    recall_window_expires_at = proposed_at + timedelta(minutes=90) if routing == "ASYNC_REVIEW" else None
+
     return MatchProposal(
         id=str(uuid.uuid4())[:8],
         shift_request_id=req.id,
@@ -209,6 +212,7 @@ def run_matching(req: ShiftRequest, nurses: list, reservations: dict) -> MatchPr
         routing=routing,
         score_breakdown=selected.score_breakdown,
         status="PROPOSED",
-        proposed_at=datetime.utcnow(),
+        proposed_at=proposed_at,
         all_candidates=candidates,
+        recall_window_expires_at=recall_window_expires_at,
     )

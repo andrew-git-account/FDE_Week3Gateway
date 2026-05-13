@@ -71,9 +71,11 @@ class MatchProposal:
     confidence_score: float
     routing: str  # AUTO_SUBMIT | ASYNC_REVIEW | HUMAN_ESCALATE | NO_MATCH
     score_breakdown: Optional[ScoreBreakdown]
-    status: str  # PROPOSED | ACCEPTED | RECALLED | NO_MATCH
+    status: str  # PROPOSED | ACCEPTED | RECALLED | LAPSED_UNREVIEWED | NO_MATCH
     proposed_at: Optional[datetime]
     all_candidates: list  # list[CandidateResult]
+    recall_window_expires_at: Optional[datetime] = None  # ASYNC_REVIEW only; proposed_at + 90 min
+    shadow_flagged: bool = False  # Phase 1: coordinator flagged this AUTO_SUBMIT proposal
 
 
 @dataclass
