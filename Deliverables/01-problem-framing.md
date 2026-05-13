@@ -43,7 +43,7 @@ The same nurse is submitted to multiple hospitals simultaneously. If two hospita
 ## 2. Success Metrics
 
 ### MedFlex (Business Outcomes)
-| Metric | Baseline | Phase 1 Target (8w) | Phase 2 Target (24w) |
+| Metric | Baseline | Phase 1 Target (6w) | Phase 2 Target (24w) |
 |--------|----------|---------------------|----------------------|
 | Avg. time to fill | 4.2h | <1h | <20 min |
 | Coordinator throughput (proposals/day) | 120/coordinator | 300/coordinator (agent handles 50%) | 600/coordinator (agent handles 80%) |
@@ -52,6 +52,8 @@ The same nurse is submitted to multiple hospitals simultaneously. If two hospita
 | Revenue capacity (without headcount increase) | $14M baseline | — | Supports $100M+ pipeline |
 
 *Note: The 7% mismatch conflates two failure modes — credential mismatch (solvable by better matching) and hospital preference rejection (requires reputation signals). Metrics must be tracked separately from Phase 1.*
+
+*Note on Phase 1 measurement: the mismatch rate is a lagging indicator — it appears only after a hospital reports a problem. Phase 1 tracks two leading signals visible from week 2: (1) hospital acceptance rate trend per confidence band (weekly), and (2) coordinator shadow-review flag rate per week. A declining acceptance rate or rising flag count triggers investigation before any mismatch is reported.*
 
 ### Hospitals (Client Outcomes)
 | Metric | Target |
@@ -90,5 +92,6 @@ The same nurse is submitted to multiple hospitals simultaneously. If two hospita
 - Starts with high-confidence automation only (Phase 1), building trust incrementally
 - Keeps coordinators visible in the loop for MEDIUM confidence cases
 - Builds on existing systems (ServiceNow queue) rather than replacing workflows
+- Validates incrementally via weekly drift signals (acceptance rate trend, coordinator flag rate) — not a 30-day black box where nobody knows if it's working until it isn't
 
 The key difference: previous projects added AI features to existing systems. This engagement makes agents the *mechanism* for shift matching — the decision logic lives in the agent, not the coordinator's head.

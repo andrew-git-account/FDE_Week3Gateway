@@ -39,7 +39,7 @@ The core operational loop: hospital submits shift request → coordinator parses
 | Nurse availability is self-managed; no push/sync API confirmed | Discovery | Agent reads availability data; cannot write it; staleness is a risk |
 | Credential re-verification is a separate compliance team process | Discovery | Out of scope for coordinator agent; but agent must read credential status |
 | No explicit nurse confirmation protocol exists today | Discovery | Agent must introduce one; nurse UX change required |
-| Marcus has low AI trust; two prior failures | Discovery | Phase 1 must show measurable ROI within 8 weeks to secure Phase 2 funding |
+| Marcus has low AI trust; two prior failures | Discovery | Phase 1 must show measurable ROI within 6 weeks — board update is week 6; no extensions |
 | Competitive market: same nurses submitted by multiple agencies | Discovery | Agent must handle double-booking race conditions |
 | State regulatory requirements govern credential check cadence | Discovery (Linda TBD) | Compliance check frequency must respect state law; confirm with Linda |
 
@@ -55,15 +55,21 @@ The core operational loop: hospital submits shift request → coordinator parses
 4. **Coordinator Oversight Dashboard** — surfaces MEDIUM-confidence proposals for async review; exception queue; match audit trail
 5. **Nurse reservation protocol** — atomic soft-lock to prevent double-booking across concurrent hospital submissions
 
-**Phase 1 (Weeks 1-8) — First ROI signal:**
-- Intake parsing + Matching agent for HIGH-confidence cases only (>85% match score)
-- Coordinator reviews all MEDIUM/LOW — maintains current oversight
-- Target: 50% of daily proposals handled autonomously; response time <1h
-- Measurable ROI: coordinator time freed × cost savings
+**Phase 1 (Weeks 1-6) — Board demo target:**
+- Intake parsing + Matching agent for HIGH-confidence (>85%) AND MEDIUM-confidence (70–85%) cases
+- HIGH: auto-submit to hospital; 90-min non-blocking shadow review window for coordinator
+- MEDIUM: auto-submit to hospital; 90-min coordinator recall window; unreviewed lapse escalates to team lead (not auto-cleared)
+- LOW: agent surfaces ranked candidates to coordinator; coordinator decides
+- Dashboard UI deferred to weeks 7–8; coordinators work from raw email/SMS alerts in weeks 1–6
+- Target: 50% of daily proposals handled autonomously; response time <1h; live on real volume for week-6 board demo
+
+**Phase 1b (Weeks 7-8) — Dashboard launch:**
+- Coordinator review queue UI, audit trail, and recall interface deployed
+- Full coordinator workflow adoption; no functional scope change to agents
 
 **Phase 2 (Weeks 9-16):**
-- MEDIUM-confidence auto-submit with 30-min async coordinator recall window
-- Confirmation loop launched (nurse explicit acceptance)
+- Agent 3 confirmation loop launched (nurse explicit acceptance via SMS/email)
+- No-show prevention state machine live
 - Target: 75% autonomous; no-show rate decline starts
 
 **Phase 3 (Weeks 17-24):**
@@ -97,6 +103,6 @@ The core operational loop: hospital submits shift request → coordinator parses
 | Coordinator resistance to agent adoption | High | Blocks Phase 2 | Phase 1 keeps coordinators in loop; frame as "coordinator gets to stop doing the boring part" |
 | Nurse availability data is stale / unreliable | Medium | Wrong availability = failed proposals | Confirmation loop catches mismatches before shift date |
 | Competitive double-booking unresolvable at scale | Medium | Hospital loses trust | Reservation protocol (see ADR in D#3) |
-| Hospital rejects agent-proposed nurses at higher rate than human-proposed | Medium | Reputational damage | Start Phase 1 with >85% confidence threshold; tune threshold based on mismatch data |
+| Hospital rejects agent-proposed nurses at higher rate than human-proposed | Medium | Reputational damage | HIGH band (>85%) auto-submits; MEDIUM band (70–85%) has 90-min coordinator recall window as safety net. Weekly drift signals (acceptance rate trend + coordinator flag rate) detect rejection pattern from week 2 — before reputational damage accumulates |
 | Kim / Aaron / Linda unavailable for design sign-off | High (discovery gap) | Spec gaps in D#4 | Flag assumptions explicitly; plan follow-up sessions before Phase 1 build |
 | State regulatory requirements conflict with agent automation of credential checking | Unknown | Legal exposure | Confirm with Linda before Phase 2 launch |
