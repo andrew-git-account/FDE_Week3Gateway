@@ -11,23 +11,25 @@ This is an FDE (Full-Delivery Engineer) learning program repository for Week 3. 
 - **Week 3 Current**: End-to-end AI-native engagement simulation (MedFlex healthcare staffing scenario)
 - **Gate 3 Scenario**: `FDE/Week 3/Gate3-Participant-Pack.md` — released Thursday 09:00 CET
 
-### Current Status (post-Thursday, pre-exam)
+### Current Status (ALL DELIVERABLES COMPLETE — post-exam, pre-verbal-defense)
 - ✅ Gate 3 scenario pack received and read
 - ✅ Discovery role-play with Marcus Reyes completed (09:30-10:30 CET)
 - ✅ W3D3 Build-loop exercise submitted: `FDE/Week 3/Build-loop-exercise-outcome-Andrzej_Bihun.md`
-- ✅ D#1 draft: `Deliverables/01-problem-framing.md`
-- ✅ D#2 draft: `Deliverables/02-intake-scope.md`
-- ✅ D#3 draft: `Deliverables/03-architecture.md`
+- ✅ D#1 final: `Deliverables/01-problem-framing.md` (revised — 6-week targets, leading indicators added)
+- ✅ D#2 final: `Deliverables/02-intake-scope.md` (revised — Phase 1b added, 90-min window, 6-week constraint)
+- ✅ D#3 final: `Deliverables/03-architecture.md` (revised — ADR-03 rewritten for 90-min window + LAPSED_UNREVIEWED; ADR-01 updated; Phase 1b added)
 - ✅ D#4a capability spec: `Deliverables/04a-capability-spec-intake-parsing.md`
-- ✅ D#4b capability spec: `Deliverables/04b-capability-spec-shift-matching.md`
+- ✅ D#4b capability spec: `Deliverables/04b-capability-spec-shift-matching.md` (revised — 90-min recall window, LAPSED_UNREVIEWED state, leading drift indicators in observability)
 - ✅ D#4c capability spec: `Deliverables/04c-capability-spec-confirmation-noshow.md`
 - ✅ D#5 build-loop response: `Deliverables/05-build-loop-response.md` (8 Cascade signals, all classified)
-- ✅ D#7 validation plan: `Deliverables/07-validation-plan.md`
+- ✅ D#6 client feedback: `Deliverables/06-client-feedback.md` (3 Marcus pushback points answered; 2 accepted, 1 acknowledged spec gap)
+- ✅ D#7 validation plan: `Deliverables/07-validation-plan.md` (revised — Phase 1 Weeks 1-6, HIGH+MEDIUM, 90-min adoption target)
+- ✅ D#8 reflection: `Deliverables/08-reflection.md` (written in B2 English; 4 lessons: business context, workflow observation, process diagram, employee pain points)
 - ✅ D#9 self-spec reflection: `Deliverables/09-self-spec-reflection.md` (6 gaps diagnosed against D#4a/b)
-- ✅ CIO presentation PDF: `Deliverables/MedFlex-CIO-Presentation.pdf` (generated via `Deliverables/generate_cio_presentation.py`)
-- ✅ Demo app built and verified: `demo_app/` — Streamlit, three connected pages, all routing scenarios working
-- **FRIDAY**: Exam 13:30-17:00 CET, verbal defense 17:50-19:00 CET
-- **OUTSTANDING**: D#6 (awaits Marcus pushback memo, Friday 09:00), D#8 (reflection, written at exam end), D#1–D#3 revisions (against Marcus feedback)
+- ✅ CIO presentation v2: `Deliverables/MedFlex-CIO-Presentation-v2.pdf` (6 slides; B2 English; new Slide 5 covers Marcus feedback + responses)
+- ✅ Demo app updated: 90-min recall window, LAPSED_UNREVIEWED state, shadow_flagged field, Phase 1 drift indicator panel
+- ✅ Cross-deliverable consistency verified: no stale 8-week or 30-min recall references remain
+- **OUTSTANDING**: Verbal defense 17:50-19:00 CET
 
 ### Key Objectives for Week 3
 1. Execute complete FDE engagement: discovery → specification → build-loop correction → stakeholder management
@@ -401,6 +403,10 @@ python -m streamlit run Home.py --server.headless true --browser.gatherUsageStat
 - **Hard filter only checks `required_credentials`** (confirmed), not `assumed_credentials`. Assumed creds are soft signals — treating them as hard requirements caused NO_MATCH on the medium scenario (Pediatrics from "peds unit" blocked all ICU nurses).
 - **`assumed_penalty = 0.10`** applied in `shift_matcher.run_matching()` when `req.assumed_credentials` is non-empty. Reduces routing confidence without changing the displayed score decomposition.
 - **`MatchProposal.confidence_score` stores the adjusted (post-penalty) score**, not the raw soft-score total. This ensures the number shown in the UI is consistent with the routing decision.
+- **`recall_window_expires_at`** — set to `proposed_at + 90 minutes` for ASYNC_REVIEW proposals only; None for all other routings. Based on Kim's input that coordinators batch-check every 1–2 hours.
+- **`shadow_flagged: bool = False`** — on MatchProposal; allows coordinator to flag an AUTO_SUBMIT proposal during the 90-min shadow review window. Tracked as leading drift indicator.
+- **LAPSED_UNREVIEWED status** — when an ASYNC_REVIEW proposal's recall window expires without the coordinator opening it, status becomes LAPSED_UNREVIEWED and escalates to team lead (15-min intervention window). Never auto-cleared.
+- **Phase 1 Shadow Monitoring panel** in Agent 2 page shows two leading drift indicators (hospital acceptance rate by band, weekly coordinator flag rate) visible from week 2.
 - **Nurse reservation** — 15-minute in-memory soft-lock per nurse in `st.session_state["reservations"]`. If all passing nurses are reserved, top candidate displayed without reservation.
 - **`st.session_state` keys**: `shift_request` (Agent 1→2), `match_proposal` (Agent 2→3), `nurse_assignment` (Agent 3 internal), `reservations` (Agent 2 internal).
 
@@ -420,16 +426,18 @@ Nurses engineered to produce varied outcomes for the same ICU shift (St. Mary's 
 - `FDE/Week 3/Gate3-Participant-Pack.md` — full scenario, deliverables, scoring guidance
 
 ### Completed deliverables:
-- `Deliverables/01-problem-framing.md` — D#1 draft
-- `Deliverables/02-intake-scope.md` — D#2 draft
-- `Deliverables/03-architecture.md` — D#3 draft
+- `Deliverables/01-problem-framing.md` — D#1 final: 6-week targets, leading indicators, architectural requirements decoded
+- `Deliverables/02-intake-scope.md` — D#2 final: Phase 1 (Wks 1-6) + Phase 1b (Wks 7-8), 90-min window, 6-week board deadline constraint
+- `Deliverables/03-architecture.md` — D#3 final: 3 ADRs; ADR-03 revised for 90-min window + LAPSED_UNREVIEWED; Phase 1b added
 - `Deliverables/04a-capability-spec-intake-parsing.md` — Agent 1 spec (shared entity glossary, 6 requirements)
-- `Deliverables/04b-capability-spec-shift-matching.md` — Agent 2 spec (hard filter, soft scoring, routing, Phase 1 shadow review)
+- `Deliverables/04b-capability-spec-shift-matching.md` — Agent 2 spec (hard filter, soft scoring, routing, 90-min recall window, LAPSED_UNREVIEWED, Phase 1 shadow review + leading drift indicators)
 - `Deliverables/04c-capability-spec-confirmation-noshow.md` — Agent 3 spec (state machine, reply classification, retry schedule)
 - `Deliverables/05-build-loop-response.md` — D#5: 8 Cascade Public Libraries signals classified (3 builder misread, 2 unjustified choice, 1 test/env, 1 spec gap, 1 legitimate clarification)
-- `Deliverables/07-validation-plan.md` — accuracy targets, failure modes, compliance risks, drift, SPoFs
+- `Deliverables/06-client-feedback.md` — D#6: Marcus 3-point pushback response; 6-week accepted (dashboard deferred); leading indicators added; 90-min window + lapse escalation
+- `Deliverables/07-validation-plan.md` — accuracy targets, failure modes, compliance risks, drift, SPoFs; Phase 1 Weeks 1-6, HIGH+MEDIUM scope
+- `Deliverables/08-reflection.md` — D#8: 4 lessons in B2 English (business context, workflow observation, process diagram, employee pain points)
 - `Deliverables/09-self-spec-reflection.md` — D#9: 6 gaps diagnosed against D#4a/D#4b actual build; 4 spec-owned, 1 builder misread, 1 unjustified addition
-- `Deliverables/MedFlex-CIO-Presentation.pdf` — 5-slide CIO deck (generated via `generate_cio_presentation.py`)
+- `Deliverables/MedFlex-CIO-Presentation-v2.pdf` — 6-slide CIO deck in B2 English; Slide 5 = Marcus feedback response (generated via `generate_cio_presentation.py`)
 - `FDE/Week 3/Build-loop-exercise-outcome-Andrzej_Bihun.md` — W3D3 exercise submission (reference for D#5)
 
 ### Demo app:
